@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Sign Up - QuickBid</title>
+    <link rel="stylesheet" href="style.css" />
+    <style>
+        .signup-card {
+            background: white;
+            border-radius: 16px;
+            padding: 40px 30px;
+            text-align: center;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+            width: 550px;
+            color: #000000;
+        }
+
+        .signup-form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .signup-form input {
+            padding: 12px 15px;
+            border: none;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            background: rgba(255, 255, 255, 0.2);
+            color: #000000;
+            font-size: 16px;
+            outline: none;
+            transition: background 0.3s ease;
+        }
+
+        .signup-form input::placeholder {
+            color: #000000;
+        }
+
+        .signup-form input:focus {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .signup-form button {
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            background: #004225;
+            color: #ffffff;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s ease, transform 0.2s ease, border 0.2s ease;
+        }
+
+        .signup-form button:hover {
+            background: #ffffff;
+            color: black;
+            transform: translateY(-2px);
+            border: 1px solid black;
+        }
+
+        .login-link {
+            margin-top: 20px;
+            font-size: 14px;
+            color: #000000;
+        }
+
+        .login-link a {
+            color: #092532;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .login-link a:hover {
+            color: #000000;
+        }
+        .signup-logo {
+            width: auto;
+            height: auto;
+        }
+
+    </style>
+</head>
+<body class="login-body">
+
+<div class="signup-card">
+    <img src="images/qbrr.png" alt="QuickBid Logo" class="signup-logo" />
+
+    <form class="signup-form" method="post" action="#">
+        <!-- Row 1: Full Name + Address -->
+        <div style="display: flex; gap: 10px;">
+            <input type="text" name="fullname" placeholder="Full Name" required style="flex: 1;" />
+            <input type="text" name="address" placeholder="Address" required style="flex: 1;" />
+        </div>
+
+        <!-- Row 2: Contact Number + Username -->
+        <div style="display: flex; gap: 10px;">
+            <input type="text" name="number" placeholder="Contact Number" required style="flex: 1;" />
+            <input type="text" name="username" placeholder="Username" required style="flex: 1;" />
+        </div>
+
+        <!-- Row 3: Email -->
+        <input type="email" name="email" placeholder="Email" required />
+
+        <!-- Row 4: Password + Confirm Password -->
+        <div style="display: flex; gap: 10px;">
+            <input type="password" name="password" placeholder="Password" required style="flex: 1;" />
+            <input type="password" name="confirm-password" placeholder="Confirm Password" required style="flex: 1;" />
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit">Create Account</button>
+    </form>
+
+
+    <div class="login-link">
+        Already have an account? <a href="login.html">Sign in</a>
+    </div>
+</div>
+
+</body>
+</html>
