@@ -7,13 +7,14 @@
     <link rel="stylesheet" href="style.css" />
     <style>
         .signup-card {
-            background: white;
+            background: rgba(255, 255, 255, 0.1); /* semi-transparent */
             border-radius: 16px;
             padding: 40px 30px;
             text-align: center;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
             width: 550px;
             color: #000000;
+            backdrop-filter: blur(10px);
         }
 
         .signup-form {
@@ -83,42 +84,46 @@
 
     </style>
 </head>
+<video autoplay muted loop playsinline class="background-video">
+    <source src="https://static.videezy.com/system/resources/previews/000/042/153/original/18.mp4" type="video/mp4">
+    Your browser does not support the video tag.
+</video>
 <body class="login-body">
 
-<div class="signup-card">
-    <img src="images/qbrr.png" alt="QuickBid Logo" class="signup-logo" />
+    <div class="signup-card">
+        <img src="images/qbrr.png" alt="QuickBid Logo" class="signup-logo" />
 
-    <form class="signup-form" method="post" action="#">
-        <!-- Row 1: Full Name + Address -->
-        <div style="display: flex; gap: 10px;">
-            <input type="text" name="fullname" placeholder="Full Name" required style="flex: 1;" />
-            <input type="text" name="address" placeholder="Address" required style="flex: 1;" />
+        <form class="signup-form" method="post" action="#">
+            <!-- Row 1: Full Name + Address -->
+            <div style="display: flex; gap: 10px;">
+                <input type="text" name="fullname" placeholder="Full Name" required style="flex: 1;" />
+                <input type="text" name="address" placeholder="Address" required style="flex: 1;" />
+            </div>
+
+            <!-- Row 2: Contact Number + Username -->
+            <div style="display: flex; gap: 10px;">
+                <input type="text" name="number" placeholder="Contact Number" required style="flex: 1;" />
+                <input type="text" name="username" placeholder="Username" required style="flex: 1;" />
+            </div>
+
+            <!-- Row 3: Email -->
+            <input type="email" name="email" placeholder="Email" required />
+
+            <!-- Row 4: Password + Confirm Password -->
+            <div style="display: flex; gap: 10px;">
+                <input type="password" name="password" placeholder="Password" required style="flex: 1;" />
+                <input type="password" name="confirm-password" placeholder="Confirm Password" required style="flex: 1;" />
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit">Create Account</button>
+        </form>
+
+
+        <div class="login-link">
+            Already have an account? <a href="login.html">Sign in</a>
         </div>
-
-        <!-- Row 2: Contact Number + Username -->
-        <div style="display: flex; gap: 10px;">
-            <input type="text" name="number" placeholder="Contact Number" required style="flex: 1;" />
-            <input type="text" name="username" placeholder="Username" required style="flex: 1;" />
-        </div>
-
-        <!-- Row 3: Email -->
-        <input type="email" name="email" placeholder="Email" required />
-
-        <!-- Row 4: Password + Confirm Password -->
-        <div style="display: flex; gap: 10px;">
-            <input type="password" name="password" placeholder="Password" required style="flex: 1;" />
-            <input type="password" name="confirm-password" placeholder="Confirm Password" required style="flex: 1;" />
-        </div>
-
-        <!-- Submit Button -->
-        <button type="submit">Create Account</button>
-    </form>
-
-
-    <div class="login-link">
-        Already have an account? <a href="login.html">Sign in</a>
     </div>
-</div>
 
 </body>
 </html>
