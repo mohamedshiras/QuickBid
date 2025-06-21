@@ -1,0 +1,930 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Auction Details | QuickBid</title>
+    <link rel="shortcut icon" href="images/qb.png" type="image/x-icon" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
+        }
+
+        /* Navbar */
+        .navbar {
+            background-color: #F5F5DC;
+            padding: 10px 30px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 999;
+        }
+
+        .nav-wrapper {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-logo {
+            height: 40px;
+            width: auto;
+            margin: 10px;
+            margin-left: 30px;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .button {
+            padding: 10px 16px;
+            border: solid 2px;
+            border-radius: 8px;
+            background: #004225;
+            color: #ffffff;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s ease, transform 0.4s ease, color 0.3s ease;
+        }
+
+        .button:hover {
+            background: #ffffff;
+            transform: translateZ(-2px);
+            color: #000000;
+            border: solid 2px;
+        }
+
+        /* Main Content */
+        .auction-container {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 0 20px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        /* Auction Images */
+        .auction-images {
+            display: grid;
+            grid-template-columns: 80px 1fr;
+            gap: 15px;
+        }
+
+        .thumbnail-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .thumbnail {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 8px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .thumbnail:hover, .thumbnail.active {
+            border-color: #004225;
+            transform: scale(1.05);
+        }
+
+        .main-image {
+            width: 100%;
+            height: 500px;
+            object-fit: contain;
+            background-color: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            padding: 10px;
+        }
+
+        /* Auction Details */
+        .auction-details {
+            background-color: #fff;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .auction-title {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: #004225;
+        }
+
+        .auction-category {
+            display: inline-block;
+            background-color: #f0f0f0;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 15px;
+        }
+
+        .auction-description {
+            margin: 20px 0;
+            line-height: 1.6;
+            color: #555;
+        }
+
+        .auction-meta {
+            display: flex;
+            gap: 30px;
+            margin: 20px 0;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #666;
+        }
+
+        .meta-item i {
+            color: #004225;
+        }
+
+        /* Bidding Section */
+        .bidding-section {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+
+        .current-bid {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .bid-label {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .bid-amount {
+            font-size: 24px;
+            font-weight: 700;
+            color: #004225;
+        }
+
+        .bid-time {
+            background-color: #fff8e1;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+            border-left: 4px solid #ffc107;
+        }
+
+        .time-remaining {
+            font-weight: 600;
+            color: #d32f2f;
+        }
+
+        .bid-form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .bid-input-group {
+            position: relative;
+        }
+
+        .bid-input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .bid-input:focus {
+            border-color: #004225;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(0, 66, 37, 0.2);
+        }
+
+        .currency-symbol {
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #666;
+        }
+
+        .bid-button {
+            background-color: #004225;
+            color: white;
+            padding: 14px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border: solid 2px;
+        }
+
+        .bid-button:hover {
+            transform: translateZ(-2px);
+            background: white;
+            color: black;
+            border: solid 2px;
+        }
+
+        .bid-button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .bid-increment {
+            font-size: 12px;
+            color: #666;
+            text-align: center;
+            margin-top: 5px;
+        }
+
+        /* Bid History */
+        .bid-history {
+            margin-top: 40px;
+            background-color: #fff;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #004225;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title i {
+            font-size: 16px;
+        }
+
+        .bid-list {
+            list-style: none;
+        }
+
+        .bid-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .bid-item:last-child {
+            border-bottom: none;
+        }
+
+        .bidder-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .bidder-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background-color: #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+            font-weight: 600;
+        }
+
+        .bidder-name {
+            font-weight: 500;
+        }
+
+        .bid-amount-history {
+            font-weight: 600;
+            color: #004225;
+        }
+
+        .bid-time-history {
+            font-size: 12px;
+            color: #888;
+        }
+
+        /* Seller Info */
+        .seller-info {
+            background-color: #fff;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            margin-top: 30px;
+        }
+
+        .seller-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .seller-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background-color: #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .seller-name {
+            font-weight: 600;
+            font-size: 18px;
+        }
+
+        .seller-rating {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: #ffc107;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        .seller-meta {
+            display: flex;
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .seller-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .seller-meta-item i {
+            color: #004225;
+        }
+
+        .contact-seller {
+            margin-top: 20px;
+        }
+
+        .contact-button {
+            width: 100%;
+            padding: 10px;
+            background-color: transparent;
+            border: 2px solid #004225;
+            color: #004225;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .contact-button:hover {
+            background-color: #004225;
+            color: white;
+        }
+
+        /* Footer */
+        .footer {
+            background: linear-gradient(135deg, #1a4d3a 0%, #0d2d20 100%);
+            color: white;
+            padding: 60px 40px 0;
+            margin-top: 40px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .footer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image:
+                    linear-gradient(45deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                    linear-gradient(-45deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 60px 60px;
+            pointer-events: none;
+        }
+
+        .footer::after {
+            content: '';
+            position: absolute;
+            top: 20%;
+            right: -10%;
+            width: 300px;
+            height: 300px;
+            background: rgba(255, 251, 0, 0.05);
+            border-radius: 50%;
+            filter: blur(100px);
+        }
+
+        .footer-content {
+            position: relative;
+            z-index: 2;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .footer-main {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 60px;
+            margin-bottom: 40px;
+        }
+
+        .footer-brand .brand-description {
+            font-size: 16px;
+            line-height: 1.6;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 30px;
+        }
+
+        .social-icons {
+            display: flex;
+            gap: 15px;
+        }
+
+        .social-icons a {
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .social-icons a:hover {
+            background: #fffb00;
+            color: #1a4d3a;
+            transform: translateZ(-2px);
+            cursor: pointer;
+        }
+
+        .footer-column h3 {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #fffb00;
+        }
+
+        .footer-column ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .footer-column ul li {
+            margin-bottom: 12px;
+        }
+
+        .footer-column ul li a {
+            text-decoration: none;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 15px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .footer-column ul li a:hover {
+            color: #fffb00;
+            padding-left: 8px;
+        }
+
+        .footer-column ul li a::before {
+            content: '';
+            position: absolute;
+            left: -8px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 0;
+            height: 2px;
+            background: #fffb00;
+            transition: width 0.3s ease;
+        }
+
+        .footer-column ul li a:hover::before {
+            width: 4px;
+        }
+
+        .contact-info p {
+            margin-bottom: 12px;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .contact-info i {
+            color: #fffb00;
+            width: 16px;
+        }
+
+        .back-to-top {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+            font-size: 14px;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+
+        .back-to-top:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+            color: #1a4d3a;
+            background: #fffb00;
+            font-weight: bold;
+        }
+
+        .footer-bottom {
+            background: #fffb00;
+            color: #1a4d3a;
+            padding: 15px 0;
+            text-align: center;
+            font-size: 14px;
+            font-weight: 500;
+            margin: 0 -40px;
+        }
+
+        /* Responsive */
+        @media (max-width: 992px) {
+            .auction-container {
+                grid-template-columns: 1fr;
+            }
+
+            .auction-images {
+                grid-template-columns: 60px 1fr;
+            }
+
+            .thumbnail {
+                width: 60px;
+                height: 60px;
+            }
+
+            .main-image {
+                height: 400px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .auction-meta {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .bid-history, .seller-info {
+                padding: 20px;
+            }
+
+            .footer-main {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .auction-images {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto auto;
+            }
+
+            .thumbnail-container {
+                flex-direction: row;
+                order: 2;
+                overflow-x: auto;
+                padding-bottom: 10px;
+            }
+
+            .thumbnail {
+                min-width: 60px;
+            }
+
+            .main-image {
+                height: 300px;
+                order: 1;
+            }
+
+            .footer-main {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Navigation Bar -->
+<nav class="navbar">
+    <div class="nav-wrapper">
+        <a class="navbar-brand" href="index.html">
+            <img src="images/qbrrr.png" alt="QuickBid Logo" class="nav-logo" />
+        </a>
+        <div class="nav-buttons">
+            <button class="button" id="loginbutton">Log In</button>
+            <button class="button" id="signupbutton">Sign Up</button>
+        </div>
+    </div>
+</nav>
+
+<!-- Main Content -->
+<div class="auction-container">
+    <!-- Auction Images -->
+    <div class="auction-images">
+        <div class="thumbnail-container">
+            <img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500&h=500&fit=crop" alt="Vintage Watch 1" class="thumbnail active" />
+            <img src="https://images.unsplash.com/photo-1434056886845-dac89ffe9b56?w=500&h=500&fit=crop" alt="Vintage Watch 2" class="thumbnail" />
+            <img src="https://images.unsplash.com/photo-1542496658-e33a6d0d50f6?w=500&h=500&fit=crop" alt="Vintage Watch 3" class="thumbnail" />
+            <img src="https://images.unsplash.com/photo-1519766304817-4f37bda74a26?w=500&h=500&fit=crop" alt="Vintage Watch 4" class="thumbnail" />
+        </div>
+        <img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500&h=500&fit=crop" alt="Vintage Watch Collection" class="main-image" />
+    </div>
+
+    <!-- Auction Details -->
+    <div class="auction-details">
+        <h1 class="auction-title">Vintage Watch Collection</h1>
+        <span class="auction-category">Collectibles & Antiques</span>
+
+        <p class="auction-description">
+            This exquisite collection features three rare vintage timepieces from the 1960s era, each in excellent working condition.
+            The collection includes a Rolex Oyster Perpetual, an Omega Seamaster, and a Jaeger-LeCoultre Memovox. All watches have
+            been professionally serviced and come with their original boxes and documentation.
+        </p>
+
+        <div class="auction-meta">
+            <div class="meta-item">
+                <i class="fas fa-eye"></i>
+                <span>1,245 views</span>
+            </div>
+            <div class="meta-item">
+                <i class="fas fa-gavel"></i>
+                <span>24 bids</span>
+            </div>
+            <div class="meta-item">
+                <i class="fas fa-heart"></i>
+                <span>87 watchers</span>
+            </div>
+        </div>
+
+        <!-- Bidding Section -->
+        <div class="bidding-section">
+            <div class="current-bid">
+                <span class="bid-label">Current Bid</span>
+                <span class="bid-amount">Rs.24,500.00</span>
+            </div>
+
+            <div class="bid-time">
+                <p>Auction ends in <span class="time-remaining">2d 14h 32m</span></p>
+            </div>
+
+            <form class="bid-form">
+                <div class="bid-input-group">
+                    <span class="currency-symbol">Rs.</span>
+                    <input type="number" class="bid-input" placeholder="Enter your bid amount" min="24500" step="500" style="padding-left: 30px;" />
+                </div>
+                <span class="bid-increment">Next minimum bid: Rs.25,000.00</span>
+                <button type="submit" class="bid-button">Place Bid</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Bid History -->
+    <div class="bid-history">
+        <h2 class="section-title">
+            <i class="fas fa-history"></i>
+            Bid History
+        </h2>
+        <ul class="bid-list">
+            <li class="bid-item">
+                <div class="bidder-info">
+                    <div class="bidder-avatar">JD</div>
+                    <div>
+                        <div class="bidder-name">JohnDoe</div>
+                        <div class="bid-time-history">Today, 14:32</div>
+                    </div>
+                </div>
+                <div class="bid-amount-history">Rs.24,500.00</div>
+            </li>
+            <li class="bid-item">
+                <div class="bidder-info">
+                    <div class="bidder-avatar">AS</div>
+                    <div>
+                        <div class="bidder-name">AntiqueShop</div>
+                        <div class="bid-time-history">Today, 13:45</div>
+                    </div>
+                </div>
+                <div class="bid-amount-history">Rs.24,000.00</div>
+            </li>
+            <li class="bid-item">
+                <div class="bidder-info">
+                    <div class="bidder-avatar">CW</div>
+                    <div>
+                        <div class="bidder-name">CollectorW</div>
+                        <div class="bid-time-history">Today, 11:20</div>
+                    </div>
+                </div>
+                <div class="bid-amount-history">Rs.23,500.00</div>
+            </li>
+            <li class="bid-item">
+                <div class="bidder-info">
+                    <div class="bidder-avatar">TM</div>
+                    <div>
+                        <div class="bidder-name">TimeMaster</div>
+                        <div class="bid-time-history">Yesterday, 18:05</div>
+                    </div>
+                </div>
+                <div class="bid-amount-history">Rs.23,000.00</div>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Seller Information -->
+    <div class="seller-info">
+        <div class="seller-header">
+            <div class="seller-avatar">TW</div>
+            <div>
+                <div class="seller-name">TimeWatches</div>
+                <div class="seller-rating">
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star-half-alt"></i>
+                    <span>(128 reviews)</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="seller-meta">
+            <div class="seller-meta-item">
+                <i class="fas fa-map-marker-alt"></i>
+                <span>Colombo, Sri Lanka</span>
+            </div>
+            <div class="seller-meta-item">
+                <i class="fas fa-user-clock"></i>
+                <span>Member since 2018</span>
+            </div>
+        </div>
+
+        <div class="contact-seller">
+            <button class="contact-button">
+                <i class="fas fa-envelope"></i> Contact Seller
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Footer Section -->
+<div class="footer">
+    <div class="footer-content">
+        <div class="footer-main">
+            <div class="footer-brand">
+                <img src="images/qby.png" alt="QuickBid Logo" class="nav-logo" />
+                <p class="brand-description">
+                    Empowering bidders with advanced auction tools to improve bidding experience and maximize value discovery.
+                </p>
+                <div class="social-icons">
+                    <a aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                    <a aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+                    <a aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                    <a aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                </div>
+                <a href="#" class="back-to-top">
+                    <i class="fas fa-chevron-up"></i>
+                    BACK TO TOP
+                </a>
+            </div>
+
+            <div class="footer-column">
+                <h3>Site Map</h3>
+                <ul>
+                    <li><a href="#">Homepage</a></li>
+                    <li><a href="#">Technology</a></li>
+                    <li><a href="#">QuickBid Marketplace</a></li>
+                    <li><a href="#">Resources & News</a></li>
+                    <li><a href="#">Careers</a></li>
+                    <li><a href="contact.html">Contact Us</a></li>
+                    <li><a href="#">Portal</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-column">
+                <h3>Legal</h3>
+                <ul>
+                    <li><a href="#">Privacy Policy</a></li>
+                    <li><a href="#">Terms of Services</a></li>
+                    <li><a href="#">Bidder's Corner</a></li>
+                </ul>
+
+                <div class="contact-info" style="margin-top: 30px;">
+                    <p><i class="fas fa-phone"></i> +94 (77) 500-6727</p>
+                    <p><i class="fas fa-envelope"></i> quickbid.support@gmail.com</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer-bottom">
+        <div class="copyright">
+            Copyright © 2025, quickbid.ai. All Rights Reserved.
+        </div>
+    </div>
+</div>
+
+<script>
+    // Thumbnail click functionality
+    document.querySelectorAll('.thumbnail').forEach(thumb => {
+        thumb.addEventListener('click', function() {
+            // Remove active class from all thumbnails
+            document.querySelectorAll('.thumbnail').forEach(t => t.classList.remove('active'));
+
+            // Add active class to clicked thumbnail
+            this.classList.add('active');
+
+            // Update main image
+            const mainImage = document.querySelector('.main-image');
+            mainImage.src = this.src;
+            mainImage.alt = this.alt;
+        });
+    });
+
+    // Bid form validation
+    const bidForm = document.querySelector('.bid-form');
+    if (bidForm) {
+        bidForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const bidInput = this.querySelector('.bid-input');
+            const minBid = parseInt(bidInput.min);
+            const bidAmount = parseInt(bidInput.value);
+
+            if (isNaN(bidAmount) {
+                alert('Please enter a valid bid amount');
+                return;
+            }
+
+            if (bidAmount < minBid) {
+                alert(`Your bid must be at least Rs.${minBid.toLocaleString()}`);
+                return;
+            }
+
+            // Here you would typically send the bid to your server
+            alert(`Bid of Rs.${bidAmount.toLocaleString()} placed successfully!`);
+
+            // Reset form
+            bidInput.value = '';
+        });
+    }
+</script>
+
+</body>
+</html>

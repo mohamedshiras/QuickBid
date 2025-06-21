@@ -79,7 +79,7 @@ h2 {
 
 .login-form button {
     padding: 12px;
-    border: none;
+    border: solid 2px #004225;
     border-radius: 8px;
     background: #004225;
     color: #ffffff;
@@ -92,8 +92,8 @@ h2 {
 .login-form button:hover {
     background: #ffffff;
     color: black;
-    transform: translateY(-2px);
-    border: 1px solid black;
+    transform: translateZ(-2px);
+    border: 2px solid black;
 
 }
 
