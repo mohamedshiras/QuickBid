@@ -1,59 +1,115 @@
 package com.example.QuickBid.controller;
 
-import com.example.QuickBid.model.Admin;
-import com.example.QuickBid.model.User;
-import com.example.QuickBid.repository.AdminRepository;
-import com.example.QuickBid.repository.UserRepository;
+import com.example.QuickBid.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.view.RedirectView;
 
-@RestController
+import jakarta.servlet.http.HttpSession;
+import java.util.Map;
+
+@Controller
 @RequestMapping("/api/auth")
 public class AuthController {
 
     @Autowired
-    private UserRepository userRepository;
+    private AuthService authService;
 
-    @Autowired
-    private AdminRepository adminRepository;
+    // User Login Endpoint
+    @PostMapping("/login")
+    public ResponseEntity<?> loginUser(@RequestParam("username") String username,
+                                       @RequestParam("password") String password,
+                                       HttpSession session) {
 
-    @Autowired
-    private BCryptPasswordEncoder passwordEncoder;
+        Map<String, Object> response = authService.loginUser(username, password);
 
-    @PostMapping("/login/user")
-    public ResponseEntity<?> loginUser(@RequestBody LoginRequest loginRequest) {
-        User user = userRepository.findByUsername(loginRequest.getUsername())
-                .orElse(null);
+        if ((Boolean) response.get("success")) {
+            // Store user info in session
+            session.setAttribute("userId", response.get("userId"));
+            session.setAttribute("username", response.get("username"));
+            session.setAttribute("email", response.get("email"));
+            session.setAttribute("fullname", response.get("fullname"));
+            session.setAttribute("isLoggedIn", true);
 
-        if (user == null || !passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
-            return ResponseEntity.status(401).body("Invalid username or password");
+            // Return success response
+            return ResponseEntity.ok(response);
+        } else {
+            // Return error response
+            return ResponseEntity.badRequest().body(response);
         }
-
-        return ResponseEntity.ok("User login successful");
     }
 
-    @PostMapping("/login/admin")
-    public ResponseEntity<?> loginAdmin(@RequestBody LoginRequest loginRequest) {
-        Admin admin = adminRepository.findByAdminUsername(loginRequest.getUsername())
-                .orElse(null);
+    // User Registration Endpoint
+    @PostMapping("/register")
+    public ResponseEntity<?> registerUser(@RequestParam("fullname") String fullname,
+                                          @RequestParam("address") String address,
+                                          @RequestParam("number") String contact,
+                                          @RequestParam("username") String username,
+                                          @RequestParam("email") String email,
+                                          @RequestParam("password") String password,
+                                          @RequestParam("confirm-password") String confirmPassword) {
 
-        if (admin == null || !passwordEncoder.matches(loginRequest.getPassword(), admin.getAdminPassword())) {
-            return ResponseEntity.status(401).body("Invalid admin credentials");
+        Map<String, Object> response = authService.registerUser(fullname, address, contact,
+                username, email, password, confirmPassword);
+
+        if ((Boolean) response.get("success")) {
+            return ResponseEntity.ok(response);
+        } else {
+            return ResponseEntity.badRequest().body(response);
         }
-
-        return ResponseEntity.ok("Admin login successful");
     }
-}
 
-class LoginRequest {
-    private String username;
-    private String password;
+    // Admin Login Endpoint
+    @PostMapping("/admin/login")
+    public ResponseEntity<?> loginAdmin(@RequestParam("adminUsername") String adminUsername,
+                                        @RequestParam("adminPassword") String adminPassword,
+                                        HttpSession session) {
 
-    // Getters and Setters
-    public String getUsername() { return username; }
-    public void setUsername(String username) { this.username = username; }
-    public String getPassword() { return password; }
-    public void setPassword(String password) { this.password = password; }
+        Map<String, Object> response = authService.loginAdmin(adminUsername, adminPassword);
+
+        if ((Boolean) response.get("success")) {
+            // Store admin info in session
+            session.setAttribute("adminId", response.get("adminId"));
+            session.setAttribute("adminUsername", response.get("adminUsername"));
+            session.setAttribute("isAdminLoggedIn", true);
+
+            return ResponseEntity.ok(response);
+        } else {
+            return ResponseEntity.badRequest().body(response);
+        }
+    }
+
+    // Logout Endpoint
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(HttpSession session) {
+        session.invalidate();
+        return ResponseEntity.ok(Map.of("success", true, "message", "Logged out successfully"));
+    }
+
+    // Check if user is logged in
+    @GetMapping("/check-session")
+    public ResponseEntity<?> checkSession(HttpSession session) {
+        Boolean isLoggedIn = (Boolean) session.getAttribute("isLoggedIn");
+        Boolean isAdminLoggedIn = (Boolean) session.getAttribute("isAdminLoggedIn");
+
+        if (isLoggedIn != null && isLoggedIn) {
+            return ResponseEntity.ok(Map.of(
+                    "isLoggedIn", true,
+                    "userId", session.getAttribute("userId"),
+                    "username", session.getAttribute("username"),
+                    "email", session.getAttribute("email"),
+                    "fullname", session.getAttribute("fullname")
+            ));
+        } else if (isAdminLoggedIn != null && isAdminLoggedIn) {
+            return ResponseEntity.ok(Map.of(
+                    "isAdminLoggedIn", true,
+                    "adminId", session.getAttribute("adminId"),
+                    "adminUsername", session.getAttribute("adminUsername")
+            ));
+        } else {
+            return ResponseEntity.ok(Map.of("isLoggedIn", false));
+        }
+    }
 }

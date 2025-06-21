@@ -5,8 +5,21 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Login - QuickBid</title>
   <link rel="shortcut icon" href="images/qb.png" type="image/x-icon" />
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="css/style.css" />
   <link rel="icon" type="image/png" href="images/qb.png" />
+  <style>
+    .error-message {
+      color: #ff4444;
+      margin-top: 10px;
+      font-size: 14px;
+    }
+
+    .success-message {
+      color: #00aa44;
+      margin-top: 10px;
+      font-size: 14px;
+    }
+  </style>
 </head>
 <video autoplay muted loop playsinline class="background-video">
   <source src="https://static.videezy.com/system/resources/previews/000/042/153/original/18.mp4" type="video/mp4">
@@ -16,50 +29,47 @@
 
 <div class="login-card">
   <img src="images/qbrr.png" alt="QuickBid" class="login-logo" />
-  <form action="index.html" method="POST" class="login-form">
-    <input type="text" name="username" placeholder="Username" required />
+  <form class="login-form" id="loginForm" method="POST">
+    <input type="text" name="username" placeholder="Username or Email" required />
     <input type="password" name="password" placeholder="Password" required />
     <button type="submit">Login</button>
   </form>
 
-  <p class="signup-text">Don’t have an account? <a href="signup.html">Sign up</a></p>
+  <!-- Message div for displaying success/error messages -->
+  <div id="message"></div>
+
+  <p class="signup-text">Don't have an account? <a href="signup.html">Sign up</a></p>
 </div>
-</body>
+
 <script>
-  document.getElementById('loginForm').addEventListener('submit', async function(e) {
+  document.getElementById('loginForm').addEventListener('submit', function(e) {
     e.preventDefault();
 
-    const username = document.getElementById('username').value;
-    const password = document.getElementById('password').value;
-    const userType = document.querySelector('input[name="userType"]:checked').value;
-    const errorElement = document.getElementById('error-message');
+    const formData = new FormData(this);
+    const messageDiv = document.getElementById('message');
 
-    try {
-      const endpoint = userType === 'admin' ? '/api/auth/login/admin' : '/api/auth/login/user';
-
-      const response = await fetch(endpoint, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          username: username,
-          password: password
-        })
-      });
-
-      const data = await response.text();
-
-      if (response.ok) {
-        // Redirect based on user type
-        window.location.href = userType === 'admin' ? 'admindash.html' : 'index.html';
-      } else {
-        errorElement.textContent = data;
-      }
-    } catch (error) {
-      errorElement.textContent = 'An error occurred during login';
-      console.error('Error:', error);
-    }
+    fetch('/api/auth/login', {
+      method: 'POST',
+      body: formData
+    })
+            .then(response => response.json())
+            .then(data => {
+              if (data.success) {
+                messageDiv.innerHTML = '<div class="success-message">' + data.message + '</div>';
+                // Redirect to dashboard or home page after successful login
+                setTimeout(() => {
+                  window.location.href = 'index.html'; // Change this to your dashboard page
+                }, 1000);
+              } else {
+                messageDiv.innerHTML = '<div class="error-message">' + data.message + '</div>';
+              }
+            })
+            .catch(error => {
+              messageDiv.innerHTML = '<div class="error-message">Login failed. Please try again.</div>';
+              console.error('Error:', error);
+            });
   });
 </script>
+
+</body>
 </html>

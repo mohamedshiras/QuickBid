@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <title>Sign Up - QuickBid</title>
     <link rel="shortcut icon" href="images/qb.png" type="image/x-icon" />
-    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="css/style.css" />
     <style>
         .signup-card {
             background: rgba(255, 255, 255, 0.1); /* semi-transparent */
@@ -82,6 +82,18 @@
             height: auto;
         }
 
+        .error-message {
+            color: #ff4444;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+
+        .success-message {
+            color: #00aa44;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+
     </style>
 </head>
 <video autoplay muted loop playsinline class="background-video">
@@ -90,40 +102,72 @@
 </video>
 <body class="login-body">
 
-    <div class="signup-card">
-        <img src="images/qbrr.png" alt="QuickBid Logo" class="signup-logo" />
+<div class="signup-card">
+    <img src="images/qbrr.png" alt="QuickBid Logo" class="signup-logo" />
 
-        <form class="signup-form" method="post" action="#">
-            <!-- Row 1: Full Name + Address -->
-            <div style="display: flex; gap: 10px;">
-                <input type="text" name="fullname" placeholder="Full Name" required style="flex: 1;" />
-                <input type="text" name="address" placeholder="Address" required style="flex: 1;" />
-            </div>
-
-            <!-- Row 2: Contact Number + Username -->
-            <div style="display: flex; gap: 10px;">
-                <input type="text" name="number" placeholder="Contact Number" required style="flex: 1;" />
-                <input type="text" name="username" placeholder="Username" required style="flex: 1;" />
-            </div>
-
-            <!-- Row 3: Email -->
-            <input type="email" name="email" placeholder="Email" required />
-
-            <!-- Row 4: Password + Confirm Password -->
-            <div style="display: flex; gap: 10px;">
-                <input type="password" name="password" placeholder="Password" required style="flex: 1;" />
-                <input type="password" name="confirm-password" placeholder="Confirm Password" required style="flex: 1;" />
-            </div>
-
-            <!-- Submit Button -->
-            <button type="submit">Create Account</button>
-        </form>
-
-
-        <div class="login-link">
-            Already have an account? <a href="login.html">Sign in</a>
+    <form class="signup-form" method="post" action="/api/auth/register" id="signupForm">
+        <!-- Row 1: Full Name + Address -->
+        <div style="display: flex; gap: 10px;">
+            <input type="text" name="fullname" placeholder="Full Name" required style="flex: 1;" />
+            <input type="text" name="address" placeholder="Address" required style="flex: 1;" />
         </div>
+
+        <!-- Row 2: Contact Number + Username -->
+        <div style="display: flex; gap: 10px;">
+            <input type="text" name="number" placeholder="Contact Number" maxlength="10" pattern="[0-9]{10}" required style="flex: 1;" />
+            <input type="text" name="username" placeholder="Username" required style="flex: 1;" />
+        </div>
+
+        <!-- Row 3: Email -->
+        <input type="email" name="email" placeholder="Email" required />
+
+        <!-- Row 4: Password + Confirm Password -->
+        <div style="display: flex; gap: 10px;">
+            <input type="password" name="password" placeholder="Password" required style="flex: 1;" />
+            <input type="password" name="confirm-password" placeholder="Confirm Password" required style="flex: 1;" />
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit">Create Account</button>
+    </form>
+
+    <!-- Message div for displaying success/error messages -->
+    <div id="message"></div>
+
+    <div class="login-link">
+        Already have an account? <a href="login.html">Sign in</a>
     </div>
+</div>
+
+<script>
+    document.getElementById('signupForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const formData = new FormData(this);
+        const messageDiv = document.getElementById('message');
+
+        fetch('/api/auth/register', {
+            method: 'POST',
+            body: formData
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    messageDiv.innerHTML = '<div class="success-message">' + data.message + '</div>';
+                    // Redirect to login page after 2 seconds
+                    setTimeout(() => {
+                        window.location.href = 'login.html';
+                    }, 2000);
+                } else {
+                    messageDiv.innerHTML = '<div class="error-message">' + data.message + '</div>';
+                }
+            })
+            .catch(error => {
+                messageDiv.innerHTML = '<div class="error-message">Registration failed. Please try again.</div>';
+                console.error('Error:', error);
+            });
+    });
+</script>
 
 </body>
 </html>

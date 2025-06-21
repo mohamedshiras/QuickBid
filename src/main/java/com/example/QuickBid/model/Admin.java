@@ -6,30 +6,62 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "admins")
 public class Admin {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer adminID;
+    @Column(name = "adminID")
+    private Long adminId;
 
-    @Column(nullable = false, unique = true)
+    @Column(name = "adminUsername", nullable = false, unique = true, length = 50)
     private String adminUsername;
 
-    @Column(nullable = false)
+    @Column(name = "adminPassword", nullable = false, length = 255)
     private String adminPassword;
 
-    @Column(updatable = false)
+    @Column(name = "createdAt", nullable = false)
     private LocalDateTime createdAt;
 
-    @PrePersist
-    protected void onCreate() {
-        createdAt = LocalDateTime.now();
+    // Constructors
+    public Admin() {
+        this.createdAt = LocalDateTime.now();
+    }
+
+    public Admin(String adminUsername, String adminPassword) {
+        this.adminUsername = adminUsername;
+        this.adminPassword = adminPassword;
+        this.createdAt = LocalDateTime.now();
     }
 
     // Getters and Setters
-    public Integer getAdminID() { return adminID; }
-    public void setAdminID(Integer adminID) { this.adminID = adminID; }
-    public String getAdminUsername() { return adminUsername; }
-    public void setAdminUsername(String adminUsername) { this.adminUsername = adminUsername; }
-    public String getAdminPassword() { return adminPassword; }
-    public void setAdminPassword(String adminPassword) { this.adminPassword = adminPassword; }
-    public LocalDateTime getCreatedAt() { return createdAt; }
+    public Long getAdminId() {
+        return adminId;
+    }
+
+    public void setAdminId(Long adminId) {
+        this.adminId = adminId;
+    }
+
+    public String getAdminUsername() {
+        return adminUsername;
+    }
+
+    public void setAdminUsername(String adminUsername) {
+        this.adminUsername = adminUsername;
+    }
+
+    public String getAdminPassword() {
+        return adminPassword;
+    }
+
+    public void setAdminPassword(String adminPassword) {
+        this.adminPassword = adminPassword;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
 }

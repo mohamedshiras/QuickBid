@@ -6,38 +6,59 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "users")
 public class User {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
-    @Column(nullable = false)
+    @Column(name = "fullname", nullable = false, length = 50)
     private String fullname;
 
-    @Column(nullable = false)
+    @Column(name = "address", nullable = false, length = 50)
     private String address;
 
-    @Column(nullable = false, length = 10)
+    @Column(name = "contact", nullable = false, length = 10)
     private String contact;
 
-    @Column(nullable = false, unique = true)
+    @Column(name = "username", nullable = false, unique = true, length = 50)
     private String username;
 
-    @Column(nullable = false, unique = true)
+    @Column(name = "email", nullable = false, unique = true, length = 100)
     private String email;
 
-    @Column(nullable = false)
+    @Column(name = "password", nullable = false, length = 255)
     private String password;
 
-    @Column(updatable = false)
+    @Column(name = "createdAt", nullable = false)
     private LocalDateTime createdAt;
 
-    @ManyToOne
-    @JoinColumn(name = "who_approved", nullable = false)
-    private Admin approvedBy;
+    @Column(name = "who_approved", nullable = false)
+    private Long whoApproved;
 
-    @PrePersist
-    protected void onCreate() {
-        createdAt = LocalDateTime.now();
+    // Constructors
+    public User() {
+        this.createdAt = LocalDateTime.now();
+    }
+
+    public User(String fullname, String address, String contact, String username,
+                String email, String password, Long whoApproved) {
+        this.fullname = fullname;
+        this.address = address;
+        this.contact = contact;
+        this.username = username;
+        this.email = email;
+        this.password = password;
+        this.whoApproved = whoApproved;
+        this.createdAt = LocalDateTime.now();
+    }
+
+    // Getters and Setters
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getFullname() {
@@ -96,19 +117,11 @@ public class User {
         this.createdAt = createdAt;
     }
 
-    public Admin getApprovedBy() {
-        return approvedBy;
+    public Long getWhoApproved() {
+        return whoApproved;
     }
 
-    public void setApprovedBy(Admin approvedBy) {
-        this.approvedBy = approvedBy;
-    }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
+    public void setWhoApproved(Long whoApproved) {
+        this.whoApproved = whoApproved;
     }
 }
