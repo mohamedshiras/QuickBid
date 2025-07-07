@@ -133,15 +133,14 @@ public class AuthService {
             }
 
             // Create new user
-            User newUser = new User(
-                    fullname.trim(),
-                    address.trim(),
-                    contact.trim(),
-                    username.trim(),
-                    email.trim().toLowerCase(),
-                    password,
-                    whoApproved
-            );
+            User newUser = new User();
+            newUser.setUsername(username);
+            newUser.setPassword(password);
+            newUser.setFullname(fullname);
+            newUser.setAddress(address);
+            newUser.setContact(contact);
+            newUser.setEmail(email);
+            newUser.setAdmin(adminRepository.findById(whoApproved).get());
 
             return userRepository.save(newUser);
 

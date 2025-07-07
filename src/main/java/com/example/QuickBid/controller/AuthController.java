@@ -31,7 +31,7 @@ public class AuthController {
             if (result.isSuccess()) {
                 // Store user/admin information in session
                 if ("USER".equals(result.getUserType())) {
-                    session.setAttribute("userId", result.getUser().getId());
+                    session.setAttribute("userId", result.getUser().getUserId());
                     session.setAttribute("username", result.getUser().getUsername());
                     session.setAttribute("userType", "USER");
                     session.setAttribute("fullname", result.getUser().getFullname());
@@ -160,7 +160,7 @@ public class AuthController {
 
             response.put("success", true);
             response.put("message", "Registration successful! You can now login with your credentials.");
-            response.put("userId", newUser.getId());
+            response.put("userId", newUser.getUserId());
 
             return ResponseEntity.ok(response);
 

@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Post Your Auction - QuickBid</title>
+    <link rel="shortcut icon" href="images/qb.png" type="image/x-icon" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    <link rel="stylesheet" href="/css/style.css"/>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background-color: #f8f9fa;
+            min-height: 100vh;
+        }
+
+        /* Main Container */
+        .main-container {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .page-title {
+            font-size: 32px;
+            font-weight: 700;
+            color: #004225;
+            margin-bottom: 10px;
+        }
+
+        .page-subtitle {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        .divider {
+            width: 80px;
+            height: 4px;
+            background: linear-gradient(90deg, #004225, #fffb00);
+            margin: 0 auto;
+            border-radius: 2px;
+        }
+
+        /* Form Container */
+        .form-container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 251, 0, 0.2);
+        }
+
+        .form-section {
+            margin-bottom: 30px;
+        }
+
+        .form-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #004225;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title i {
+            color: #fffb00;
+            background: #004225;
+            padding: 8px;
+            border-radius: 50%;
+            font-size: 14px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .form-input,
+        .form-select,
+        .form-textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e8e8e8;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: 'DM Sans', sans-serif;
+            transition: all 0.3s ease;
+            background: #fff;
+        }
+
+        .form-input:focus,
+        .form-select:focus,
+        .form-textarea:focus {
+            outline: none;
+            border-color: #004225;
+            box-shadow: 0 0 0 3px rgba(0, 66, 37, 0.1);
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .form-hint {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        /* Image Upload Section */
+        .image-upload-container {
+            border: 2px dashed #004225;
+            border-radius: 12px;
+            padding: 40px 20px;
+            text-align: center;
+            background: linear-gradient(135deg, rgba(0, 66, 37, 0.02), rgba(255, 251, 0, 0.02));
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .image-upload-container:hover {
+            border-color: #fffb00;
+            background: linear-gradient(135deg, rgba(0, 66, 37, 0.05), rgba(255, 251, 0, 0.05));
+        }
+
+        .upload-icon {
+            font-size: 48px;
+            color: #004225;
+            margin-bottom: 15px;
+        }
+
+        .upload-text {
+            font-size: 16px;
+            font-weight: 500;
+            color: #004225;
+            margin-bottom: 5px;
+        }
+
+        .upload-hint {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .image-preview-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .image-preview {
+            position: relative;
+            aspect-ratio: 1;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 2px solid #e8e8e8;
+        }
+
+        .image-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .image-remove {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: #ff4444;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            font-size: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Two Column Layout */
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        /* Submit Buttons */
+        .form-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 1px solid #e8e8e8;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #004225, #002d1a);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 66, 37, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(0, 66, 37, 0.4);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: #004225;
+            border: 2px solid #004225;
+            padding: 13px 30px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-secondary:hover {
+            background: #004225;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        /* Currency Input */
+        .currency-input {
+            position: relative;
+        }
+
+        .currency-input::before {
+            content: 'Rs.';
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #666;
+            font-weight: 500;
+            z-index: 1;
+        }
+
+        .currency-input .form-input {
+            padding-left: 50px;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .main-container {
+                margin: 20px auto;
+                padding: 0 15px;
+            }
+
+            .form-container {
+                padding: 30px 20px;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .form-actions {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .btn-primary,
+            .btn-secondary {
+                width: 100%;
+                max-width: 300px;
+            }
+
+            .page-title {
+                font-size: 24px;
+            }
+        }
+
+        /* Loading State */
+        .loading {
+            opacity: 0.7;
+            pointer-events: none;
+        }
+
+        .loading .btn-primary {
+            background: #ccc;
+        }
+
+        /* Success Message */
+        .success-message {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .success-message.show {
+            display: flex;
+        }
+
+        .success-message i {
+            font-size: 18px;
+        }
+
+        /* File Input Hidden */
+        .file-input {
+            display: none;
+        }
+
+    </style>
+</head>
+<body>
+
+<!-- Navigation Bar -->
+<nav class="navbar">
+    <div class="nav-wrapper">
+        <a class="navbar-brand" href="index.html">
+            <img src="images/qbrrr.png" alt="QuickBid Logo" class="nav-logo" />
+        </a>
+        <div class="nav-buttons">
+            <button class="button" onclick="window.location.href='index.html'">Back to Home</button>
+            <button class="button" id="loginbutton">Log In</button>
+        </div>
+    </div>
+</nav>
+
+<!-- Main Content -->
+<div class="main-container">
+    <div class="page-header">
+        <h1 class="page-title">Post Your Auction</h1>
+        <p class="page-subtitle">Create a new auction listing and reach thousands of potential bidders</p>
+        <div class="divider"></div>
+    </div>
+
+    <!-- Success Message -->
+    <div class="success-message" id="successMessage">
+        <i class="fas fa-check-circle"></i>
+        <span>Your auction has been successfully posted!</span>
+    </div>
+
+    <div class="form-container">
+        <form id="auctionForm">
+
+            <!-- Item Details Section -->
+            <div class="form-section">
+                <h3 class="section-title">
+                    <i class="fas fa-tag"></i>
+                    Item Details
+                </h3>
+
+                <div class="form-group">
+                    <label class="form-label">Item Title *</label>
+                    <input type="text" class="form-input" id="itemTitle" placeholder="Enter a descriptive title for your item" required>
+                    <div class="form-hint">A clear, specific title will attract more bidders</div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Description *</label>
+                    <textarea class="form-textarea" id="itemDescription" placeholder="Provide detailed information about your item including condition, specifications, and any other relevant details" required></textarea>
+                    <div class="form-hint">Include condition, specifications, dimensions, and any other relevant details</div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Category *</label>
+                        <select class="form-select" id="itemCategory" required>
+                            <option value="">Select a category</option>
+                            <option value="electronics">Electronics</option>
+                            <option value="collectibles">Collectibles</option>
+                            <option value="art">Art & Antiques</option>
+                            <option value="fashion">Fashion & Accessories</option>
+                            <option value="home">Home & Garden</option>
+                            <option value="sports">Sports & Recreation</option>
+                            <option value="vehicles">Vehicles</option>
+                            <option value="books">Books & Media</option>
+                            <option value="jewelry">Jewelry & Watches</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Condition</label>
+                        <select class="form-select" id="itemCondition">
+                            <option value="">Select condition</option>
+                            <option value="new">New</option>
+                            <option value="like-new">Like New</option>
+                            <option value="excellent">Excellent</option>
+                            <option value="good">Good</option>
+                            <option value="fair">Fair</option>
+                            <option value="poor">Poor</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pricing Section -->
+            <div class="form-section">
+                <h3 class="section-title">
+                    <i class="fas fa-dollar-sign"></i>
+                    Pricing & Duration
+                </h3>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Starting Price *</label>
+                        <div class="currency-input">
+                            <input type="number" class="form-input" id="startingPrice" placeholder="0.00" min="0" step="0.01" required>
+                        </div>
+                        <div class="form-hint">Set a competitive starting price to attract initial bids</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Reserve Price (Optional)</label>
+                        <div class="currency-input">
+                            <input type="number" class="form-input" id="reservePrice" placeholder="0.00" min="0" step="0.01">
+                        </div>
+                        <div class="form-hint">Minimum price you're willing to accept</div>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Auction Duration *</label>
+                        <select class="form-select" id="auctionDuration" required>
+                            <option value="">Select auction duration</option>
+                            <option value="1">1 Day</option>
+                            <option value="3">3 Days</option>
+                            <option value="5">5 Days</option>
+                            <option value="7">7 Days</option>
+                            <option value="10">10 Days</option>
+                            <option value="14">14 Days</option>
+                        </select>
+                        <div class="form-hint">Longer durations give more potential bidders a chance to see your item</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Buy It Now Price (Optional)</label>
+                        <div class="currency-input">
+                            <input type="number" class="form-input" id="buyNowPrice" placeholder="0.00" min="0" step="0.01">
+                        </div>
+                        <div class="form-hint">Allow buyers to purchase immediately at this price</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Images Section -->
+            <div class="form-section">
+                <h3 class="section-title">
+                    <i class="fas fa-images"></i>
+                    Upload Images (Max 5)
+                </h3>
+
+                <div class="image-upload-container" onclick="document.getElementById('imageInput').click()">
+                    <div class="upload-icon">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                    </div>
+                    <div class="upload-text">Click to upload images</div>
+                    <div class="upload-hint">High-quality images from multiple angles will increase your chances of selling</div>
+                    <div class="upload-hint">Supported formats: JPG, PNG, WEBP (Max 5MB each)</div>
+                </div>
+
+                <input type="file" id="imageInput" class="file-input" multiple accept="image/*" onchange="handleImageUpload(this)">
+
+                <div class="image-preview-grid" id="imagePreviewGrid">
+                    <!-- Image previews will be added here -->
+                </div>
+            </div>
+
+            <!-- Shipping Section -->
+            <div class="form-section">
+                <h3 class="section-title">
+                    <i class="fas fa-shipping-fast"></i>
+                    Shipping & Location
+                </h3>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Location *</label>
+                        <input type="text" class="form-input" id="itemLocation" placeholder="City, Province" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Shipping Options</label>
+                        <select class="form-select" id="shippingOption">
+                            <option value="">Select shipping option</option>
+                            <option value="pickup">Local Pickup Only</option>
+                            <option value="shipping">Shipping Available</option>
+                            <option value="both">Both Pickup & Shipping</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Shipping Cost (if applicable)</label>
+                    <div class="currency-input">
+                        <input type="number" class="form-input" id="shippingCost" placeholder="0.00" min="0" step="0.01">
+                    </div>
+                    <div class="form-hint">Leave blank if shipping is free or pickup only</div>
+                </div>
+            </div>
+
+            <!-- Form Actions -->
+            <div class="form-actions">
+                <button type="button" class="btn-secondary" onclick="clearForm()">Clear Form</button>
+                <button type="submit" class="btn-primary">
+                    <i class="fas fa-gavel"></i>
+                    Post Auction
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    let uploadedImages = [];
+    const maxImages = 5;
+
+    // Handle image upload
+    function handleImageUpload(input) {
+        const files = Array.from(input.files);
+
+        if (uploadedImages.length + files.length > maxImages) {
+            alert(`You can only upload a maximum of ${maxImages} images.`);
+            return;
+        }
+
+        files.forEach(file => {
+            if (file.size > 5 * 1024 * 1024) { // 5MB limit
+                alert(`File ${file.name} is too large. Maximum size is 5MB.`);
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const imageData = {
+                    file: file,
+                    url: e.target.result,
+                    name: file.name
+                };
+                uploadedImages.push(imageData);
+                updateImagePreview();
+            };
+            reader.readAsDataURL(file);
+        });
+    }
+
+    // Update image preview grid
+    function updateImagePreview() {
+        const previewGrid = document.getElementById('imagePreviewGrid');
+        previewGrid.innerHTML = '';
+
+        uploadedImages.forEach((imageData, index) => {
+            const previewDiv = document.createElement('div');
+            previewDiv.className = 'image-preview';
+            previewDiv.innerHTML = `
+                <img src="${imageData.url}" alt="${imageData.name}">
+                <button type="button" class="image-remove" onclick="removeImage(${index})">
+                    <i class="fas fa-times"></i>
+                </button>
+            `;
+            previewGrid.appendChild(previewDiv);
+        });
+    }
+
+    // Remove image
+    function removeImage(index) {
+        uploadedImages.splice(index, 1);
+        updateImagePreview();
+    }
+
+    // Clear form
+    function clearForm() {
+        if (confirm('Are you sure you want to clear all form data?')) {
+            document.getElementById('auctionForm').reset();
+            uploadedImages = [];
+            updateImagePreview();
+        }
+    }
+
+    // Form submission
+    document.getElementById('auctionForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        // Add loading state
+        document.body.classList.add('loading');
+
+        // Simulate form submission
+        setTimeout(() => {
+            document.body.classList.remove('loading');
+            document.getElementById('successMessage').classList.add('show');
+
+            // Scroll to top to show success message
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+
+            // Hide success message after 5 seconds
+            setTimeout(() => {
+                document.getElementById('successMessage').classList.remove('show');
+            }, 5000);
+        }, 2000);
+    });
+
+    // Auto-resize textarea
+    document.getElementById('itemDescription').addEventListener('input', function() {
+        this.style.height = 'auto';
+        this.style.height = (this.scrollHeight) + 'px';
+    });
+</script>
+
+</body>
+</html>
