@@ -112,7 +112,7 @@
 </div>
 
 <!-- Floating Plus Icon -->
-<div class="floating-plus">
+<div class="floating-plus" id="floatbutton">
     <div class="plus-container">
         <div class="plus-icon"><i class="fas fa-gavel"></i></div>
         <div class="plus-text">Post Auction</div>
@@ -175,6 +175,14 @@
         </div>
     </div>
 </div>
+<script>
+    const postAuctionButton = document.getElementById('floatbutton');
+    if (postAuctionButton) {
+        postAuctionButton.addEventListener('click', function() {
+            window.location.href = 'postauction.html';
+        });
+    }
+</script>
 
 </body>
 </html>

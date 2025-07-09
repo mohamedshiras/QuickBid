@@ -48,7 +48,7 @@
     const formData = new FormData(this);
     const messageDiv = document.getElementById('message');
 
-    fetch('/api/auth/login', {
+    fetch('/login', {
       method: 'POST',
       body: formData
     })

@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 @Setter
 @Getter
 @NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "users")
 public class User {
     @Id
@@ -37,18 +38,6 @@ public class User {
     private LocalDateTime createdAt;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "whoApproved", nullable = false)
+    @JoinColumn(name = "whoApproved", nullable = true)
     private Admin admin;
-
-    public User(int userId, String fullname, String address, String contact, String username, String email, String password, LocalDateTime createdAt, Admin admin) {
-        this.userId = userId;
-        this.fullname = fullname;
-        this.address = address;
-        this.contact = contact;
-        this.username = username;
-        this.email = email;
-        this.password = password;
-        this.createdAt = createdAt;
-        this.admin = admin;
-    }
 }
