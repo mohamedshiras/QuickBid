@@ -1,7 +1,8 @@
 package com.example.QuickBid.model;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 
@@ -14,7 +15,7 @@ import java.time.LocalDateTime;
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int userId;
+    private Long UserId;
 
     @Column(nullable = false, length = 50)
     private String fullname;
@@ -36,6 +37,7 @@ public class User {
 
     @Column(name = "createdAt")
     private LocalDateTime createdAt;
+
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "whoApproved", nullable = true)
