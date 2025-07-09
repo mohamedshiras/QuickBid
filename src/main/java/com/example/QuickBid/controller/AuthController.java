@@ -11,7 +11,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/auth")
 public class AuthController {
 
     @Autowired
@@ -61,8 +60,8 @@ public class AuthController {
         }
     }
 
-    @PostMapping("/register")
-    public ResponseEntity<Map<String, Object>> register(
+    @PostMapping("/signup")
+    public ResponseEntity<Map<String, Object>> signup(
             @RequestParam("fullname") String fullname,
             @RequestParam("address") String address,
             @RequestParam("number") String contact,  // Note: form uses "number" field name
@@ -145,17 +144,14 @@ public class AuthController {
                 return ResponseEntity.badRequest().body(response);
             }
 
-            // For registration, we'll assume admin with ID 1 approves (you can modify this logic)
-            Long whoApproved = 1L;
-
             User newUser = authService.registerUser(
                     fullname.trim(),
                     address.trim(),
                     contact.trim(),
                     username.trim(),
                     email.trim().toLowerCase(),
-                    password,
-                    whoApproved
+                    password
+                    // REMOVED: whoApproved
             );
 
             response.put("success", true);
