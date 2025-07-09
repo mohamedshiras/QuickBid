@@ -38,7 +38,7 @@ public class Auction {
     @Column(nullable = false, length = 25)
     private String category;
 
-    @Column(nullable = false, length = 15)
+    @Column(nullable = false, length = 15, name = "item_condition")
     private String condition;
 
     @Column(nullable = false)

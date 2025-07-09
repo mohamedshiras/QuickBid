@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 public class Admin {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long adminID;
+    private int adminID;
 
     @Column(nullable = false, unique = true, length = 50)
     private String adminUsername;

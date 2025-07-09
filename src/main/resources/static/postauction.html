@@ -572,7 +572,7 @@
 
         try {
             // 2. Use fetch to send the data to the backend
-            const response = await fetch('/postauction', {
+            const response = await fetch('/api/auctions', {
                 method: 'POST',
                 body: formData // FormData sets the correct 'multipart/form-data' header automatically
             });

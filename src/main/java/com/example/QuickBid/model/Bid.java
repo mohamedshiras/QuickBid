@@ -12,7 +12,7 @@ import lombok.*;
 public class Bid {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long bidId;
+    private int bidId;
 
     @Column(nullable = false, name = "bidDate")
     private LocalDateTime bidDate;
