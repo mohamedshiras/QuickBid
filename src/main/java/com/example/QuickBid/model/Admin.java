@@ -22,6 +22,6 @@ public class Admin {
     @Column(nullable = false)
     private String adminPassword;
 
-    @Column(name = "createdAt")
+    @Column(name = "createdAt", nullable = false)
     private LocalDateTime createdAt;
 }

@@ -9,6 +9,8 @@ import java.time.LocalDateTime;
 @Entity
 @Setter
 @Getter
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "users")
 public class User {
     @Id
@@ -36,25 +38,8 @@ public class User {
     @Column(name = "createdAt")
     private LocalDateTime createdAt;
 
-    @Column(name = "who_approved", nullable = false)
-    private Long whoApproved;
 
-    // Constructors
-    public User() {
-        this.createdAt = LocalDateTime.now();
-    }
-
-    public User(String fullname, String address, String contact, String username,
-                String email, String password, Long whoApproved) {
-        this.fullname = fullname;
-        this.address = address;
-        this.contact = contact;
-        this.username = username;
-        this.email = email;
-        this.password = password;
-        this.whoApproved = whoApproved;
-        this.createdAt = LocalDateTime.now();
-    }
-
-
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "whoApproved", nullable = true)
+    private Admin admin;
 }
