@@ -9,8 +9,6 @@ import java.time.LocalDateTime;
 @Entity
 @Setter
 @Getter
-@NoArgsConstructor
-@AllArgsConstructor
 @Table(name = "users")
 public class User {
     @Id
@@ -40,12 +38,19 @@ public class User {
 
     private LocalDateTime resetPasswordTokenExpiry;
 
+    @Column(name = "who_approved")
+    private Long whoApproved;
+
+    // Add getter and setter
+    public Long getWhoApproved() {
+        return whoApproved;
+    }
 
     @Column(name = "createdAt")
     private LocalDateTime createdAt;
 
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "whoApproved", nullable = true)
+
     private Admin admin;
 }

@@ -17,5 +17,5 @@ public class AuctionImage {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int imgId;
 
-    @Column
+
 }
