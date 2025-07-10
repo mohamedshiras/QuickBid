@@ -2,19 +2,43 @@ package com.example.QuickBid.controller;
 
 import com.example.QuickBid.model.User;
 import com.example.QuickBid.service.AuthService;
+import com.example.QuickBid.service.UserService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import lombok.RequiredArgsConstructor;
+import com.example.QuickBid.dto.*;
+import org.springframework.web.bind.annotation.*;
+
+
 
 import java.util.HashMap;
 import java.util.Map;
 
+@RequiredArgsConstructor
 @RestController
 public class AuthController {
 
+
     @Autowired
     private AuthService authService;
+
+
+    @Autowired
+    private UserService userService;
+
+    @PostMapping("/api/auth/register")
+    public Map<String, Object> registerUser(
+            @RequestParam String fullname,
+            @RequestParam String address,
+            @RequestParam String number,
+            @RequestParam String username,
+            @RequestParam String email,
+            @RequestParam String password) {
+
+        return userService.register(fullname, address, number, username, email, password);
+    }
 
     @PostMapping("/login")
     public ResponseEntity<Map<String, Object>> login(
@@ -212,4 +236,6 @@ public class AuthController {
 
         return ResponseEntity.ok(response);
     }
+
+
 }

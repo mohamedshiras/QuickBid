@@ -31,6 +31,7 @@ public class PostOption {
     @JoinColumn(name = "user_id", nullable = false)
     private User createdBy;
 
+
     // Constructors
     public PostOption() {}
 
