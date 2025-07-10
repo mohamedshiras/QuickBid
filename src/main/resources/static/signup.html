@@ -145,7 +145,7 @@
         const formData = new FormData(this);
         const messageDiv = document.getElementById('message');
 
-        fetch('/api/auth/register', {
+        fetch('/signup', {
             method: 'POST',
             body: formData
         })
