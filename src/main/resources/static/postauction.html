@@ -448,16 +448,6 @@
                     </div>
 
                     <div class="form-group">
-                        <label class="form-label">Reserve Price (Optional)</label>
-                        <div class="currency-input">
-                            <input type="number" class="form-input" id="reservePrice" placeholder="0.00" min="0" step="0.01">
-                        </div>
-                        <div class="form-hint">Minimum price you're willing to accept</div>
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
                         <label class="form-label">Auction Duration *</label>
                         <select class="form-select" id="auctionDuration" required>
                             <option value="">Select auction duration</option>
@@ -469,14 +459,6 @@
                             <option value="14">14 Days</option>
                         </select>
                         <div class="form-hint">Longer durations give more potential bidders a chance to see your item</div>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label">Buy It Now Price (Optional)</label>
-                        <div class="currency-input">
-                            <input type="number" class="form-input" id="buyNowPrice" placeholder="0.00" min="0" step="0.01">
-                        </div>
-                        <div class="form-hint">Allow buyers to purchase immediately at this price</div>
                     </div>
                 </div>
             </div>
@@ -504,39 +486,6 @@
                 </div>
             </div>
 
-            <!-- Shipping Section -->
-            <div class="form-section">
-                <h3 class="section-title">
-                    <i class="fas fa-shipping-fast"></i>
-                    Shipping & Location
-                </h3>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label">Location *</label>
-                        <input type="text" class="form-input" id="itemLocation" placeholder="City, Province" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label">Shipping Options</label>
-                        <select class="form-select" id="shippingOption">
-                            <option value="">Select shipping option</option>
-                            <option value="pickup">Local Pickup Only</option>
-                            <option value="shipping">Shipping Available</option>
-                            <option value="both">Both Pickup & Shipping</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label">Shipping Cost (if applicable)</label>
-                    <div class="currency-input">
-                        <input type="number" class="form-input" id="shippingCost" placeholder="0.00" min="0" step="0.01">
-                    </div>
-                    <div class="form-hint">Leave blank if shipping is free or pickup only</div>
-                </div>
-            </div>
-
             <!-- Form Actions -->
             <div class="form-actions">
                 <button type="button" class="btn-secondary" onclick="clearForm()">Clear Form</button>
@@ -553,40 +502,27 @@
     let uploadedImages = [];
     const maxImages = 5;
 
-    // Handle image upload
+    // Handle image upload and preview (no changes here)
     function handleImageUpload(input) {
         const files = Array.from(input.files);
-
         if (uploadedImages.length + files.length > maxImages) {
             alert(`You can only upload a maximum of ${maxImages} images.`);
             return;
         }
-
         files.forEach(file => {
-            if (file.size > 5 * 1024 * 1024) { // 5MB limit
+            if (file.size > 5 * 1024 * 1024) {
                 alert(`File ${file.name} is too large. Maximum size is 5MB.`);
                 return;
             }
-
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const imageData = {
-                    file: file,
-                    url: e.target.result,
-                    name: file.name
-                };
-                uploadedImages.push(imageData);
-                updateImagePreview();
-            };
-            reader.readAsDataURL(file);
+            const imageData = { file: file, url: URL.createObjectURL(file), name: file.name };
+            uploadedImages.push(imageData);
+            updateImagePreview();
         });
     }
 
-    // Update image preview grid
     function updateImagePreview() {
         const previewGrid = document.getElementById('imagePreviewGrid');
         previewGrid.innerHTML = '';
-
         uploadedImages.forEach((imageData, index) => {
             const previewDiv = document.createElement('div');
             previewDiv.className = 'image-preview';
@@ -600,44 +536,70 @@
         });
     }
 
-    // Remove image
     function removeImage(index) {
+        URL.revokeObjectURL(uploadedImages[index].url); // Clean up object URL
         uploadedImages.splice(index, 1);
         updateImagePreview();
     }
 
-    // Clear form
     function clearForm() {
         if (confirm('Are you sure you want to clear all form data?')) {
             document.getElementById('auctionForm').reset();
+            uploadedImages.forEach(img => URL.revokeObjectURL(img.url));
             uploadedImages = [];
             updateImagePreview();
         }
     }
 
-    // Form submission
-    document.getElementById('auctionForm').addEventListener('submit', function(e) {
+    // --- UPDATED FORM SUBMISSION LOGIC ---
+    document.getElementById('auctionForm').addEventListener('submit', async function(e) {
         e.preventDefault();
-
-        // Add loading state
         document.body.classList.add('loading');
 
-        // Simulate form submission
-        setTimeout(() => {
+        // 1. Create FormData to send files and text
+        const formData = new FormData();
+        formData.append('itemTitle', document.getElementById('itemTitle').value);
+        formData.append('itemDescription', document.getElementById('itemDescription').value);
+        formData.append('itemCategory', document.getElementById('itemCategory').value);
+        formData.append('itemCondition', document.getElementById('itemCondition').value);
+        formData.append('startingPrice', document.getElementById('startingPrice').value);
+        formData.append('auctionDuration', document.getElementById('auctionDuration').value);
+
+        // Append each image file
+        uploadedImages.forEach(imageData => {
+            formData.append('images', imageData.file, imageData.name);
+        });
+
+        try {
+            // 2. Use fetch to send the data to the backend
+            const response = await fetch('/postauction', {
+                method: 'POST',
+                body: formData // FormData sets the correct 'multipart/form-data' header automatically
+            });
+
+            const result = await response.json();
+
+            if (response.ok && result.success) {
+                // Handle success
+                document.getElementById('successMessage').classList.add('show');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                setTimeout(() => {
+                    document.getElementById('successMessage').classList.remove('show');
+                    clearForm(); // Optionally clear the form on success
+                }, 5000);
+            } else {
+                // Handle error
+                alert('Error posting auction: ' + (result.message || 'An unknown error occurred.'));
+            }
+
+        } catch (error) {
+            console.error('Submission error:', error);
+            alert('A network error occurred. Please try again.');
+        } finally {
             document.body.classList.remove('loading');
-            document.getElementById('successMessage').classList.add('show');
-
-            // Scroll to top to show success message
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-
-            // Hide success message after 5 seconds
-            setTimeout(() => {
-                document.getElementById('successMessage').classList.remove('show');
-            }, 5000);
-        }, 2000);
+        }
     });
 
-    // Auto-resize textarea
     document.getElementById('itemDescription').addEventListener('input', function() {
         this.style.height = 'auto';
         this.style.height = (this.scrollHeight) + 'px';

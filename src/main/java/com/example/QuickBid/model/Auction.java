@@ -1,10 +1,7 @@
 package com.example.QuickBid.model;
-
 import jakarta.persistence.*;
 import lombok.*;
-
 import java.time.LocalDateTime;
-
 
 @Entity
 @NoArgsConstructor
@@ -15,41 +12,43 @@ import java.time.LocalDateTime;
 public class Auction {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long auctionId;
+    private int auctionId;
 
-    @Column(nullable = false, length = 100)
+    @Column(nullable = false, length = 50)
     private String title;
 
-    @Column(nullable = false, length = 200)
+    @Column(nullable = false, length = 150)
     private String description;
 
-    @Column(nullable = false, length = 10)
+    @Column(nullable = false)
     private String startingPrice;
 
-    @Column(nullable = false, length = 10)
+    @Column(nullable = true)
     private String endingPrice;
 
-    @Column(name = "postedDateandTime")
-    private LocalDateTime postedDateandTime;
+    @Column(nullable = false, name = "postedDateAndTime")
+    private LocalDateTime postedDateAndTime;
 
-    @Column(nullable = false, name = "endedDateandTime")
-    private LocalDateTime endedDateandTime;
+    @Column(nullable = true, name = "endedDateAndTime")
+    private LocalDateTime endedDateAndTime;
 
-    @Column(columnDefinition = "DEFAULT 'pending confirmation'")
-    private String auctionStatus;
+    @Column(nullable = false)
+    private String auctionStatus = "pending confirmation";
 
     @Column(nullable = false, length = 25)
-    private String catagory;
+    private String category;
+
+    @Column(nullable = false, length = 15)
+    private String condition;
 
     @Column(nullable = false)
     private LocalDateTime auctionDeadline;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(nullable = false, name = "whoPosted")
     private User user;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(nullable = false, name = "whoApproved")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(nullable = true, name = "whoApproved")
     private Admin admin;
-
 }

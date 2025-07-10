@@ -2,20 +2,43 @@ package com.example.QuickBid.controller;
 
 import com.example.QuickBid.model.User;
 import com.example.QuickBid.service.AuthService;
+import com.example.QuickBid.service.UserService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import lombok.RequiredArgsConstructor;
+import com.example.QuickBid.dto.*;
+import org.springframework.web.bind.annotation.*;
+
+
 
 import java.util.HashMap;
 import java.util.Map;
 
+@RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/auth")
 public class AuthController {
+
 
     @Autowired
     private AuthService authService;
+
+
+    @Autowired
+    private UserService userService;
+
+    @PostMapping("/api/auth/register")
+    public Map<String, Object> registerUser(
+            @RequestParam String fullname,
+            @RequestParam String address,
+            @RequestParam String number,
+            @RequestParam String username,
+            @RequestParam String email,
+            @RequestParam String password) {
+
+        return userService.register(fullname, address, number, username, email, password);
+    }
 
     @PostMapping("/login")
     public ResponseEntity<Map<String, Object>> login(
@@ -61,8 +84,8 @@ public class AuthController {
         }
     }
 
-    @PostMapping("/register")
-    public ResponseEntity<Map<String, Object>> register(
+    @PostMapping("/signup")
+    public ResponseEntity<Map<String, Object>> signup(
             @RequestParam("fullname") String fullname,
             @RequestParam("address") String address,
             @RequestParam("number") String contact,  // Note: form uses "number" field name
@@ -145,17 +168,14 @@ public class AuthController {
                 return ResponseEntity.badRequest().body(response);
             }
 
-            // For registration, we'll assume admin with ID 1 approves (you can modify this logic)
-            Long whoApproved = 1L;
-
             User newUser = authService.registerUser(
                     fullname.trim(),
                     address.trim(),
                     contact.trim(),
                     username.trim(),
                     email.trim().toLowerCase(),
-                    password,
-                    whoApproved
+                    password
+                    // REMOVED: whoApproved
             );
 
             response.put("success", true);
@@ -216,4 +236,6 @@ public class AuthController {
 
         return ResponseEntity.ok(response);
     }
+
+
 }
