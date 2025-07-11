@@ -377,8 +377,8 @@
     </div>
 
     <div class="form-container">
-        <form id="auctionForm">
-
+        <form id="auctionForm" action="/api/auctions/create" method="post">
+            <input type="hidden" id="userId" name="userId">
             <!-- Item Details Section -->
             <div class="form-section">
                 <h3 class="section-title">
@@ -388,20 +388,20 @@
 
                 <div class="form-group">
                     <label class="form-label">Item Title *</label>
-                    <input type="text" class="form-input" id="itemTitle" placeholder="Enter a descriptive title for your item" required>
+                    <input type="text" class="form-input" name="title" id="title" placeholder="Enter a descriptive title for your item" required>
                     <div class="form-hint">A clear, specific title will attract more bidders</div>
                 </div>
 
                 <div class="form-group">
                     <label class="form-label">Description *</label>
-                    <textarea class="form-textarea" id="itemDescription" placeholder="Provide detailed information about your item including condition, specifications, and any other relevant details" required></textarea>
+                    <textarea class="form-textarea" name="description" id="description" placeholder="Provide detailed information about your item including condition, specifications, and any other relevant details" required></textarea>
                     <div class="form-hint">Include condition, specifications, dimensions, and any other relevant details</div>
                 </div>
 
                 <div class="form-row">
                     <div class="form-group">
                         <label class="form-label">Category *</label>
-                        <select class="form-select" id="itemCategory" required>
+                        <select class="form-select" name="category" id="category" required>
                             <option value="">Select a category</option>
                             <option value="electronics">Electronics</option>
                             <option value="collectibles">Collectibles</option>
@@ -418,7 +418,7 @@
 
                     <div class="form-group">
                         <label class="form-label">Condition</label>
-                        <select class="form-select" id="itemCondition">
+                        <select class="form-select" name="condition" id="condition">
                             <option value="">Select condition</option>
                             <option value="new">New</option>
                             <option value="like-new">Like New</option>
@@ -442,14 +442,14 @@
                     <div class="form-group">
                         <label class="form-label">Starting Price *</label>
                         <div class="currency-input">
-                            <input type="number" class="form-input" id="startingPrice" placeholder="0.00" min="0" step="0.01" required>
+                            <input type="number" class="form-input" name="startingPrice" id="startingPrice" placeholder="0.00" min="0" step="0.01" required>
                         </div>
                         <div class="form-hint">Set a competitive starting price to attract initial bids</div>
                     </div>
 
                     <div class="form-group">
                         <label class="form-label">Auction Duration *</label>
-                        <select class="form-select" id="auctionDuration" required>
+                        <select class="form-select" name="duration" id="duration" required>
                             <option value="">Select auction duration</option>
                             <option value="1">1 Day</option>
                             <option value="3">3 Days</option>
@@ -470,8 +470,8 @@
                     Upload Images (Max 5)
                 </h3>
 
-                <div class="image-upload-container" onclick="document.getElementById('imageInput').click()">
-                    <div class="upload-icon">
+                <div class="image-upload-container" onclick="document.getElementById('images').click()">
+                <div class="upload-icon">
                         <i class="fas fa-cloud-upload-alt"></i>
                     </div>
                     <div class="upload-text">Click to upload images</div>
@@ -479,7 +479,7 @@
                     <div class="upload-hint">Supported formats: JPG, PNG, WEBP (Max 5MB each)</div>
                 </div>
 
-                <input type="file" id="imageInput" class="file-input" multiple accept="image/*" onchange="handleImageUpload(this)">
+                <input type="file" name="images" id="images" class="file-input" multiple accept="image/*" onchange="handleImageUpload(this)">
 
                 <div class="image-preview-grid" id="imagePreviewGrid">
                     <!-- Image previews will be added here -->
@@ -502,7 +502,6 @@
     let uploadedImages = [];
     const maxImages = 5;
 
-    // Handle image upload and preview (no changes here)
     function handleImageUpload(input) {
         const files = Array.from(input.files);
         if (uploadedImages.length + files.length > maxImages) {
@@ -537,7 +536,7 @@
     }
 
     function removeImage(index) {
-        URL.revokeObjectURL(uploadedImages[index].url); // Clean up object URL
+        URL.revokeObjectURL(uploadedImages[index].url);
         uploadedImages.splice(index, 1);
         updateImagePreview();
     }
@@ -551,44 +550,57 @@
         }
     }
 
-    // --- UPDATED FORM SUBMISSION LOGIC ---
+    // 🔄 NEW: Fetch session info and control UI
+    window.addEventListener('DOMContentLoaded', async () => {
+        try {
+            const res = await fetch('/api/session/user');
+            const data = await res.json();
+            if (data.loggedIn) {
+                document.getElementById('userId').value = data.userId;
+                document.getElementById('loginbutton').style.display = 'none';
+            } else {
+                // Optionally redirect if not logged in
+                // window.location.href = "/login.html";
+            }
+        } catch (err) {
+            console.error("Session fetch failed", err);
+        }
+    });
+
+    // 📝 Submit form
     document.getElementById('auctionForm').addEventListener('submit', async function(e) {
         e.preventDefault();
         document.body.classList.add('loading');
 
-        // 1. Create FormData to send files and text
         const formData = new FormData();
-        formData.append('itemTitle', document.getElementById('itemTitle').value);
-        formData.append('itemDescription', document.getElementById('itemDescription').value);
-        formData.append('itemCategory', document.getElementById('itemCategory').value);
-        formData.append('itemCondition', document.getElementById('itemCondition').value);
+        formData.append('title', document.getElementById('title').value);
+        formData.append('description', document.getElementById('description').value);
+        formData.append('category', document.getElementById('category').value);
+        formData.append('condition', document.getElementById('condition').value);
         formData.append('startingPrice', document.getElementById('startingPrice').value);
-        formData.append('auctionDuration', document.getElementById('auctionDuration').value);
+        formData.append('duration', document.getElementById('duration').value);
+        formData.append('userId', document.getElementById('userId').value);
 
-        // Append each image file
         uploadedImages.forEach(imageData => {
             formData.append('images', imageData.file, imageData.name);
         });
 
         try {
-            // 2. Use fetch to send the data to the backend
-            const response = await fetch('/api/auctions', {
+            const response = await fetch('/api/auctions/create', {
                 method: 'POST',
-                body: formData // FormData sets the correct 'multipart/form-data' header automatically
+                body: formData
             });
 
             const result = await response.json();
 
             if (response.ok && result.success) {
-                // Handle success
                 document.getElementById('successMessage').classList.add('show');
                 window.scrollTo({ top: 0, behavior: 'smooth' });
                 setTimeout(() => {
                     document.getElementById('successMessage').classList.remove('show');
-                    clearForm(); // Optionally clear the form on success
+                    clearForm();
                 }, 5000);
             } else {
-                // Handle error
                 alert('Error posting auction: ' + (result.message || 'An unknown error occurred.'));
             }
 
@@ -600,7 +612,7 @@
         }
     });
 
-    document.getElementById('itemDescription').addEventListener('input', function() {
+    document.getElementById('description').addEventListener('input', function() {
         this.style.height = 'auto';
         this.style.height = (this.scrollHeight) + 'px';
     });

@@ -55,7 +55,7 @@ public class AuthController {
         }
     }
 
-    @PostMapping("/signup")
+    @PostMapping("/register")
     public ResponseEntity<Map<String, Object>> register(
             @RequestParam("fullname") String fullname,
             @RequestParam("address") String address,

@@ -8,6 +8,5 @@ import java.util.List;
 @Repository
 public interface AuctionRepository extends JpaRepository<Auction, Integer> {
     List<Auction> findByAuctionStatus(String status);
-
     List<Auction> findByUser_UserId(int userId);
 }
