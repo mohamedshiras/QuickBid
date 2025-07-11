@@ -246,8 +246,19 @@ public class AuctionService {
         Auction auction = auctionRepository.findById(auctionId)
                 .orElseThrow(() -> new EntityNotFoundException("Auction not found with id: " + auctionId));
 
+        // 1. Delete all bids associated with the auction
+        List<Bid> bids = bidRepository.findByAuction_AuctionIdOrderByBidAmountDesc(auctionId);
+        if (!bids.isEmpty()) {
+            bidRepository.deleteAll(bids);
+        }
+
+        // 2. Delete all images associated with the auction
         List<AuctionImage> images = auctionImageRepository.findByAuction(auction);
-        auctionImageRepository.deleteAll(images);
+        if (!images.isEmpty()) {
+            auctionImageRepository.deleteAll(images);
+        }
+
+        // 3. Finally, delete the auction itself
         auctionRepository.delete(auction);
     }
 }

@@ -439,7 +439,7 @@
         }
     }
 
-    document.addEventListener('DOMContentLoaded', async function() {
+    document.addEventListener('DOMContentLoaded', async function () {
         isLoggedIn = await checkLoginStatus();
         document.getElementById('logoutButton').addEventListener('click', logout);
 
@@ -453,6 +453,13 @@
         }
 
         fetchAuctionDetails(currentAuctionId);
+
+        // Add Pay Now click handler here
+        document.addEventListener('click', function (e) {
+            if (e.target && e.target.id === 'payButton') {
+                window.location.href = `/paymentgate.html?auctionId=${currentAuctionId}`;
+            }
+        });
     });
 
     async function fetchAuctionDetails(auctionId) {
@@ -478,36 +485,37 @@
             ).join('');
 
             container.innerHTML = `
-                <div class="auction-images">
-                    <div class="thumbnail-container">${thumbnailsHTML}</div>
-                    <img src="${data.imageUrls[0] || 'images/placeholder.png'}" alt="${data.title}" class="main-image" />
+            <div class="auction-images">
+                <div class="thumbnail-container">${thumbnailsHTML}</div>
+                <img src="${data.imageUrls[0] || 'images/placeholder.png'}" alt="${data.title}" class="main-image" />
+            </div>
+            <div class="auction-details">
+                <h1 class="auction-title">${data.title}</h1>
+                <span class="auction-category">${data.category}</span>
+                <p class="auction-description">${data.description}</p>
+                <div class="auction-meta">
+                    <div class="meta-item"><i class="fas fa-tag"></i><span>Condition: ${data.condition}</span></div>
                 </div>
-                <div class="auction-details">
-                    <h1 class="auction-title">${data.title}</h1>
-                    <span class="auction-category">${data.category}</span>
-                    <p class="auction-description">${data.description}</p>
-                    <div class="auction-meta">
-                        <div class="meta-item"><i class="fas fa-tag"></i><span>Condition: ${data.condition}</span></div>
+                <div class="bidding-section">
+                    <div class="current-bid">
+                        <span class="bid-label">Current Bid</span>
+                        <span class="bid-amount"></span>
                     </div>
-                    <div class="bidding-section">
-                        <div class="current-bid">
-                            <span class="bid-label">Current Bid</span>
-                            <span class="bid-amount"></span>
+                    <div class="bid-time"><p>Auction ends in <span class="time-remaining">--</span></p></div>
+                    <form class="bid-form" id="bidForm">
+                        <div class="bid-input-group">
+                            <input type="number" class="bid-input" placeholder="Enter your bid" required />
                         </div>
-                        <div class="bid-time"><p>Auction ends in <span class="time-remaining">--</span></p></div>
-                        <form class="bid-form" id="bidForm">
-                            <div class="bid-input-group">
-                                <input type="number" class="bid-input" placeholder="Enter your bid" required />
-                            </div>
-                            <button type="submit" class="bid-button">Place Bid</button>
-                        </form>
-                    </div>
+                        <button type="submit" class="bid-button">Place Bid</button>
+                    </form>
+                    <button id="payButton" class="bid-button" style="display: none; margin-top: 20px;">Pay Now</button>
                 </div>
-                <div class="bid-history-card">
-                    <h2 class="section-title"><i class="fas fa-history"></i> Bid History</h2>
-                    <ul class="bid-list"></ul>
-                </div>
-            `;
+            </div>
+            <div class="bid-history-card">
+                <h2 class="section-title"><i class="fas fa-history"></i> Bid History</h2>
+                <ul class="bid-list"></ul>
+            </div>
+        `;
             addThumbnailListeners();
             addBidFormListener();
         }
@@ -530,17 +538,17 @@
         let bidsHTML = '<p>No bids yet. Be the first!</p>';
         if (data.bids && data.bids.length > 0) {
             bidsHTML = data.bids.map((bid, index) => `
-                <li class="bid-item ${index === 0 ? 'new-bid' : ''}">
-                    <div class="bidder-info">
-                        <div class="bidder-avatar">${bid.bidderAvatarInitial}</div>
-                        <div>
-                            <div class="bidder-name">${bid.bidderName}</div>
-                            <div class="bid-time-history">${formatTimeAgo(bid.bidDate)}</div>
-                        </div>
+            <li class="bid-item ${index === 0 ? 'new-bid' : ''}">
+                <div class="bidder-info">
+                    <div class="bidder-avatar">${bid.bidderAvatarInitial}</div>
+                    <div>
+                        <div class="bidder-name">${bid.bidderName}</div>
+                        <div class="bid-time-history">${formatTimeAgo(bid.bidDate)}</div>
                     </div>
-                    <div class="bid-amount-history">Rs.${parseFloat(bid.bidAmount).toLocaleString()}</div>
-                </li>
-            `).join('');
+                </div>
+                <div class="bid-amount-history">Rs.${parseFloat(bid.bidAmount).toLocaleString()}</div>
+            </li>
+        `).join('');
         }
         bidList.innerHTML = bidsHTML;
 
@@ -553,7 +561,7 @@
 
     function addThumbnailListeners() {
         document.querySelectorAll('.thumbnail').forEach(thumb => {
-            thumb.addEventListener('click', function() {
+            thumb.addEventListener('click', function () {
                 document.querySelectorAll('.thumbnail').forEach(t => t.classList.remove('active'));
                 this.classList.add('active');
                 document.querySelector('.main-image').src = this.src;
@@ -563,7 +571,7 @@
 
     function addBidFormListener() {
         const bidForm = document.getElementById('bidForm');
-        if(bidForm) {
+        if (bidForm) {
             bidForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
                 const bidInput = e.target.querySelector('.bid-input');
@@ -600,6 +608,7 @@
     function startCountdown(deadline) {
         const countdownElement = document.querySelector('.time-remaining');
         const bidButton = document.querySelector('.bid-button');
+        const payButton = document.getElementById('payButton');
         if (!countdownElement || !deadline) return;
 
         clearInterval(countdownInterval);
@@ -612,7 +621,10 @@
                 clearInterval(countdownInterval);
                 countdownElement.textContent = "Auction Ended";
                 countdownElement.style.color = "#555";
-                if(bidButton) bidButton.disabled = true;
+                if (bidButton) bidButton.disabled = true;
+
+                // Show the Pay button after deadline
+                if (payButton) payButton.style.display = 'inline-block';
                 return;
             }
 

@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Checkout | QuickBid</title>
+    <link rel="shortcut icon" href="images/qb.png" type="image/x-icon">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'DM Sans', sans-serif;
+        }
+
+        body {
+            background-color: #f8f9fa;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 0 20px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        /* Navigation */
+        .navbar {
+            background-color: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 15px 0;
+        }
+
+        .nav-wrapper {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-logo {
+            height: 40px;
+        }
+
+        /* Payment Summary */
+        .payment-summary {
+            background-color: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            height: fit-content;
+        }
+
+        .summary-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: #004225;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .summary-title i {
+            font-size: 20px;
+        }
+
+        .item-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 15px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .item-row:last-child {
+            border-bottom: none;
+        }
+
+        .item-label {
+            color: #666;
+        }
+
+        .item-value {
+            font-weight: 500;
+        }
+
+        .total-row {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 2px solid #004225;
+            font-weight: 700;
+            font-size: 18px;
+        }
+
+        /* Payment Form */
+        .payment-form-container {
+            background-color: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: #004225;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-title i {
+            font-size: 20px;
+        }
+
+        .payment-methods {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .method-tab {
+            flex: 1;
+            padding: 12px;
+            text-align: center;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .method-tab.active {
+            border-color: #004225;
+            background-color: rgba(0, 66, 37, 0.05);
+        }
+
+        .method-tab i {
+            font-size: 24px;
+            margin-bottom: 8px;
+            color: #004225;
+        }
+
+        .method-tab span {
+            display: block;
+            font-weight: 500;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #555;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            border-color: #004225;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(0, 66, 37, 0.2);
+        }
+
+        .card-icons {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .card-icon {
+            width: 40px;
+            height: 25px;
+            object-fit: contain;
+            opacity: 0.5;
+            transition: opacity 0.3s ease;
+        }
+
+        .card-icon.active {
+            opacity: 1;
+        }
+
+        .row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .submit-button {
+            width: 100%;
+            background-color: #004225;
+            color: white;
+            padding: 14px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border: solid 2px #004225;
+            margin-top: 10px;
+        }
+
+        .submit-button:hover {
+            transform: translateY(-2px);
+            background: white;
+            color: #004225;
+        }
+
+        .submit-button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            border-color: #ccc;
+        }
+
+        .secure-payment {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+            color: #666;
+            font-size: 14px;
+        }
+
+        .secure-payment i {
+            color: #004225;
+        }
+
+        /* Card Preview */
+        .card-preview {
+            background: linear-gradient(135deg, #004225, #006d3a);
+            border-radius: 12px;
+            padding: 20px;
+            color: white;
+            margin-bottom: 25px;
+            box-shadow: 0 6px 15px rgba(0, 66, 37, 0.3);
+            position: relative;
+            height: 180px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .card-type {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 24px;
+        }
+
+        .card-number {
+            font-size: 20px;
+            letter-spacing: 1px;
+            margin-top: 30px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .card-details {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+
+        .card-name, .card-expiry {
+            font-size: 14px;
+            text-transform: uppercase;
+        }
+
+        /* Item Preview */
+        .item-preview {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .item-image {
+            width: 100px;
+            height: 100px;
+            border-radius: 8px;
+            object-fit: cover;
+        }
+
+        .item-info {
+            flex: 1;
+        }
+
+        .item-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .item-meta {
+            font-size: 14px;
+            color: #666;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+
+            .row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+<!-- Navigation Bar -->
+<nav class="navbar">
+    <div class="nav-wrapper">
+        <a class="navbar-brand" href="index.html">
+            <img src="images/qbrrr.png" alt="QuickBid Logo" class="nav-logo">
+        </a>
+    </div>
+</nav>
+
+<div class="container">
+    <!-- Payment Form -->
+    <div class="payment-form-container">
+        <h2 class="form-title"><i class="far fa-credit-card"></i> Payment Method</h2>
+
+        <div class="payment-methods">
+            <div class="method-tab active">
+                <i class="fas fa-credit-card"></i>
+                <span>Debit/Credit Card</span>
+            </div>
+        </div>
+
+        <!-- Card Preview -->
+        <div class="card-preview">
+            <div class="card-type">
+                <i class="fab fa-cc-visa"></i>
+            </div>
+            <div class="card-number" id="cardPreviewNumber">•••• •••• •••• ••••</div>
+            <div class="card-details">
+                <div class="card-name" id="cardPreviewName">CARDHOLDER NAME</div>
+                <div class="card-expiry" id="cardPreviewExpiry">MM/YY</div>
+            </div>
+        </div>
+
+        <form id="paymentForm">
+            <div class="form-group">
+                <label for="cardNumber" class="form-label">Card Number</label>
+                <input type="text" id="cardNumber" class="form-control" placeholder="1234 5678 9012 3456" maxlength="19" required>
+                <div class="card-icons">
+                    <img src="https://cdn-icons-png.flaticon.com/512/196/196578.png" alt="Visa" class="card-icon active" id="visaIcon">
+                    <img src="https://cdn-icons-png.flaticon.com/512/196/196561.png" alt="Mastercard" class="card-icon" id="mastercardIcon">
+            </div>
+
+            <div class="form-group">
+                <label for="cardName" class="form-label">Name on Card</label>
+                <input type="text" id="cardName" class="form-control" placeholder="John Doe" required>
+            </div>
+
+            <div class="row">
+                <div class="form-group">
+                    <label for="cardExpiry" class="form-label">Expiration Date</label>
+                    <input type="text" id="cardExpiry" class="form-control" placeholder="MM/YY" maxlength="5" required>
+                </div>
+                <div class="form-group">
+                    <label for="cardCvv" class="form-label">CVV</label>
+                    <input type="text" id="cardCvv" class="form-control" placeholder="•••" maxlength="4" required>
+                    <small class="form-text">3 or 4 digits on back of card</small>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="billingAddress" class="form-label">Billing Address</label>
+                <input type="text" id="billingAddress" class="form-control" placeholder="123 Main St" required>
+            </div>
+
+            <div class="row">
+                <div class="form-group">
+                    <label for="billingCity" class="form-label">City</label>
+                    <input type="text" id="billingCity" class="form-control" placeholder="New York" required>
+                </div>
+                <div class="form-group">
+                    <label for="billingZip" class="form-label">ZIP Code</label>
+                    <input type="text" id="billingZip" class="form-control" placeholder="10001" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="billingCountry" class="form-label">Country</label>
+                <select id="billingCountry" class="form-control" required>
+                    <option value="">Select Country</option>
+                    <option value="LK" selected>Sri Lanka</option>
+                    <option value="CA">Canada</option>
+                    <option value="UK">United Kingdom</option>
+                    <option value="AU">Australia</option>
+                    <option value="IN">India</option>
+                </select>
+            </div>
+
+            <button type="submit" class="submit-button" id="submitPayment">
+                Pay Now
+            </button>
+
+            <div class="secure-payment">
+                <i class="fas fa-lock"></i>
+                <span>Secure SSL Encryption</span>
+            </div>
+        </form>
+    </div>
+
+    <!-- Payment Summary -->
+    <div class="payment-summary">
+        <h2 class="summary-title"><i class="fas fa-receipt"></i> Order Summary</h2>
+
+        <!-- Item Preview -->
+        <div class="item-preview" id="itemPreview">
+            <img src="" alt="Auction Item" class="item-image" id="itemImage">
+            <div class="item-info">
+                <div class="item-title" id="itemTitle">Loading...</div>
+                <div class="item-meta" id="itemMeta"></div>
+            </div>
+        </div>
+
+        <div class="item-row">
+            <span class="item-label">Item Subtotal</span>
+            <span class="item-value" id="itemSubtotal">Rs.0.00</span>
+        </div>
+        <div class="item-row">
+            <span class="item-label">Shipping</span>
+            <span class="item-value" id="shippingFee">Rs.150.00</span>
+        </div>
+        <div class="item-row">
+            <span class="item-label">Tax</span>
+            <span class="item-value" id="taxAmount">Rs.0.00</span>
+        </div>
+        <div class="item-row total-row">
+            <span class="item-label">Total</span>
+            <span class="item-value" id="totalAmount">Rs.0.00</span>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', async function() {
+        // Get URL parameters
+        const params = new URLSearchParams(window.location.search);
+        const auctionId = params.get('auctionId');
+
+        if (!auctionId) {
+            alert('No auction specified. Please go back to the auction page.');
+            return;
+        }
+
+        // Fetch auction details
+        try {
+            const response = await fetch(`/api/auctions/${auctionId}`);
+            if (!response.ok) throw new Error('Failed to fetch auction details');
+            const auctionData = await response.json();
+
+            // Calculate totals
+            const bidAmount = parseFloat(auctionData.currentBid);
+            const shippingFee = 150.00; // Fixed shipping fee
+            const taxRate = 0.10; // 10% tax
+            const taxAmount = bidAmount * taxRate;
+            const totalAmount = bidAmount + shippingFee + taxAmount;
+
+            // Update UI with auction data
+            document.getElementById('itemImage').src = auctionData.imageUrls[0] || 'images/placeholder.png';
+            document.getElementById('itemTitle').textContent = auctionData.title;
+            document.getElementById('itemMeta').textContent = `Condition: ${auctionData.condition}`;
+            document.getElementById('itemSubtotal').textContent = `Rs.${bidAmount.toLocaleString('en-IN')}`;
+            document.getElementById('shippingFee').textContent = `Rs.${shippingFee.toLocaleString('en-IN')}`;
+            document.getElementById('taxAmount').textContent = `Rs.${taxAmount.toLocaleString('en-IN', {minimumFractionDigits: 2})}`;
+            document.getElementById('totalAmount').textContent = `Rs.${totalAmount.toLocaleString('en-IN', {minimumFractionDigits: 2})}`;
+
+        } catch (error) {
+            console.error('Error loading auction details:', error);
+            alert('Failed to load auction details. Please try again.');
+        }
+
+        // Card number formatting
+        const cardNumberInput = document.getElementById('cardNumber');
+        const cardPreviewNumber = document.getElementById('cardPreviewNumber');
+
+        cardNumberInput.addEventListener('input', function(e) {
+            // Format with spaces every 4 digits
+            let value = e.target.value.replace(/\s+/g, '').replace(/\D/g, '');
+            let formatted = '';
+
+            for (let i = 0; i < value.length; i++) {
+                if (i > 0 && i % 4 === 0) formatted += ' ';
+                formatted += value[i];
+            }
+
+            e.target.value = formatted;
+            cardPreviewNumber.textContent = formatted || '•••• •••• •••• ••••';
+
+            // Detect card type and highlight icon
+            detectCardType(value);
+        });
+
+        // Card name formatting
+        const cardNameInput = document.getElementById('cardName');
+        const cardPreviewName = document.getElementById('cardPreviewName');
+
+        cardNameInput.addEventListener('input', function(e) {
+            cardPreviewName.textContent = e.target.value.toUpperCase() || 'CARDHOLDER NAME';
+        });
+
+        // Expiry date formatting
+        const cardExpiryInput = document.getElementById('cardExpiry');
+        const cardPreviewExpiry = document.getElementById('cardPreviewExpiry');
+
+        cardExpiryInput.addEventListener('input', function(e) {
+            // Auto-insert slash after MM
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length > 2) {
+                value = value.substring(0, 2) + '/' + value.substring(2, 4);
+            }
+
+            e.target.value = value;
+            cardPreviewExpiry.textContent = value || 'MM/YY';
+        });
+
+        // CVV formatting
+        const cardCvvInput = document.getElementById('cardCvv');
+        cardCvvInput.addEventListener('input', function(e) {
+            e.target.value = e.target.value.replace(/\D/g, '');
+        });
+
+        // Card type detection
+        function detectCardType(number) {
+            const visaIcon = document.getElementById('visaIcon');
+            const mastercardIcon = document.getElementById('mastercardIcon');
+
+            // Reset all icons
+            [visaIcon, mastercardIcon, amexIcon, discoverIcon].forEach(icon => {
+                icon.classList.remove('active');
+            });
+
+            if (/^4/.test(number)) {
+                visaIcon.classList.add('active');
+                document.querySelector('.card-type i').className = 'fab fa-cc-visa';
+            } else if (/^5[1-5]/.test(number)) {
+                mastercardIcon.classList.add('active');
+                document.querySelector('.card-type i').className = 'fab fa-cc-mastercard';
+            }
+        }
+
+        // Payment method tabs
+        const methodTabs = document.querySelectorAll('.method-tab');
+        methodTabs.forEach(tab => {
+            tab.addEventListener('click', function() {
+                methodTabs.forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+
+        // Form submission
+        const paymentForm = document.getElementById('paymentForm');
+        const submitButton = document.getElementById('submitPayment');
+
+        paymentForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            submitButton.disabled = true;
+            submitButton.textContent = 'Processing...';
+
+            try {
+                // Get form data
+                const formData = {
+                    auctionId: auctionId,
+                    cardNumber: document.getElementById('cardNumber').value.replace(/\s+/g, ''),
+                    cardName: document.getElementById('cardName').value,
+                    cardExpiry: document.getElementById('cardExpiry').value,
+                    cardCvv: document.getElementById('cardCvv').value,
+                    billingAddress: document.getElementById('billingAddress').value,
+                    billingCity: document.getElementById('billingCity').value,
+                    billingZip: document.getElementById('billingZip').value,
+                    billingCountry: document.getElementById('billingCountry').value,
+                    amount: parseFloat(document.getElementById('totalAmount').textContent.replace(/[^\d.]/g, ''))
+                };
+
+                // Send payment data to server
+                const response = await fetch('/api/payments/process', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData)
+                });
+
+                const result = await response.json();
+                if (!result.success) throw new Error(result.message);
+
+                // Redirect to success page
+                window.location.href = `/paymentsuccess.html?transactionId=${result.transactionId}`;
+
+            } catch (error) {
+                alert(`Payment failed: ${error.message}`);
+            } finally {
+                submitButton.disabled = false;
+                submitButton.textContent = 'Pay Now';
+            }
+        });
+    });
+</script>
+</body>
+</html>

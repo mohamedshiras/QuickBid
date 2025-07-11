@@ -3,6 +3,8 @@ package com.example.QuickBid.controller;
 import com.example.QuickBid.dto.AuctionAdminDTO;
 import com.example.QuickBid.model.Admin;
 import com.example.QuickBid.model.User;
+import com.example.QuickBid.repository.AuctionImageRepository;
+import com.example.QuickBid.repository.BidRepository;
 import com.example.QuickBid.service.AdminService;
 import com.example.QuickBid.service.AuctionService;
 import com.example.QuickBid.service.UserService;
@@ -24,6 +26,7 @@ public class AdminController {
 
     @Autowired
     private AuctionService auctionService;
+
 
 
     // --- User Management Endpoints ---

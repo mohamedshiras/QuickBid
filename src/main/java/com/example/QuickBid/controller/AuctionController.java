@@ -1,5 +1,4 @@
 package com.example.QuickBid.controller;
-
 import com.example.QuickBid.dto.AuctionCardDTO;
 import com.example.QuickBid.dto.AuctionDTO;
 import com.example.QuickBid.dto.AuctionDetailDTO;
@@ -10,10 +9,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-
 
 @RestController
 @RequestMapping("/api/auctions")

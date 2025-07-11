@@ -1,5 +1,7 @@
 package com.example.QuickBid.controller;
 
+import com.example.QuickBid.model.Bid;
+import com.example.QuickBid.repository.BidRepository;
 import com.example.QuickBid.service.AuctionService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api")
@@ -15,6 +18,8 @@ public class BidController {
 
     @Autowired
     private AuctionService auctionService;
+
+    private BidRepository bidRepository;
 
     @PostMapping("/auctions/{auctionId}/bids")
     public ResponseEntity<?> placeBid(
@@ -47,3 +52,4 @@ public class BidController {
         }
     }
 }
+
