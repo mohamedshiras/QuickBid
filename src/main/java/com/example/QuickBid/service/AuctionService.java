@@ -1,15 +1,13 @@
 package com.example.QuickBid.service;
 
-import com.example.QuickBid.dto.AuctionAdminDTO;
-import com.example.QuickBid.dto.AuctionCardDTO;
-import com.example.QuickBid.dto.AuctionDTO;
-import com.example.QuickBid.dto.AuctionDetailDTO;
-import com.example.QuickBid.dto.SellerInfoDTO;
+import com.example.QuickBid.dto.*;
 import com.example.QuickBid.model.Auction;
 import com.example.QuickBid.model.AuctionImage;
+import com.example.QuickBid.model.Bid;
 import com.example.QuickBid.model.User;
 import com.example.QuickBid.repository.AuctionImageRepository;
 import com.example.QuickBid.repository.AuctionRepository;
+import com.example.QuickBid.repository.BidRepository;
 import com.example.QuickBid.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Base64;
@@ -36,6 +35,9 @@ public class AuctionService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private BidRepository bidRepository;
 
     @Transactional
     public Auction createAuction(AuctionDTO auctionDTO, MultipartFile[] images) throws IOException {
@@ -112,22 +114,73 @@ public class AuctionService {
 
         sellerInfoDTO.setSellerAvatarInitial(seller.getFullname().substring(0, 1).toUpperCase());
 
+        List<BidDTO> bidDTOs = bidRepository.findByAuction_AuctionIdOrderByBidAmountDesc(auctionId)
+                .stream()
+                .map(bid -> {
+                    BidDTO dto = new BidDTO();
+                    dto.setBidderName(bid.getUser().getUsername());
+                    dto.setBidAmount(bid.getBidAmount());
+                    dto.setBidDate(bid.getBidDate());
+                    dto.setBidderAvatarInitial(bid.getUser().getFullname().substring(0, 1).toUpperCase());
+                    return dto;
+                })
+                .collect(Collectors.toList());
+
         AuctionDetailDTO detailDTO = new AuctionDetailDTO();
         detailDTO.setAuctionId(auction.getAuctionId());
         detailDTO.setTitle(auction.getTitle());
         detailDTO.setDescription(auction.getDescription());
         detailDTO.setCategory(auction.getCategory());
         detailDTO.setCondition(auction.getCondition());
-        detailDTO.setStartingPrice(auction.getStartingPrice());
-        detailDTO.setCurrentBid(auction.getStartingPrice());
         detailDTO.setAuctionDeadline(auction.getAuctionDeadline());
         detailDTO.setImageUrls(imageUrls);
         detailDTO.setSeller(sellerInfoDTO);
+        detailDTO.setBids(bidDTOs);
+
+        if (!bidDTOs.isEmpty()) {
+            detailDTO.setCurrentBid(bidDTOs.get(0).getBidAmount());
+        } else {
+            detailDTO.setCurrentBid(auction.getStartingPrice());
+        }
 
         return detailDTO;
     }
 
-    // --- Methods for Administrative Auction Management ---
+    // NEW: Method to handle placing a bid
+    @Transactional
+    public Bid placeBid(int auctionId, int userId, String amountStr) {
+        Auction auction = auctionRepository.findById(auctionId)
+                .orElseThrow(() -> new EntityNotFoundException("Auction not found"));
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found"));
+
+        if (LocalDateTime.now().isAfter(auction.getAuctionDeadline())) {
+            throw new IllegalStateException("This auction has already ended.");
+        }
+
+        if (user.getUserId().equals(auction.getUser().getUserId())) {
+            throw new IllegalStateException("You cannot bid on your own auction.");
+        }
+
+        BigDecimal newBidAmount = new BigDecimal(amountStr);
+
+        List<Bid> bids = bidRepository.findByAuction_AuctionIdOrderByBidAmountDesc(auctionId);
+        BigDecimal currentHighestBid = bids.isEmpty() ? new BigDecimal(auction.getStartingPrice()) : new BigDecimal(bids.get(0).getBidAmount());
+
+        if (newBidAmount.compareTo(currentHighestBid) <= 0) {
+            throw new IllegalArgumentException("Your bid must be higher than the current bid of Rs." + currentHighestBid.toPlainString());
+        }
+
+        Bid newBid = new Bid();
+        newBid.setAuction(auction);
+        newBid.setUser(user);
+        newBid.setBidAmount(amountStr);
+        newBid.setBidDate(LocalDateTime.now());
+
+        return bidRepository.save(newBid);
+    }
+
+    // --- Administrative Methods ---
 
     @Transactional(readOnly = true)
     public List<AuctionAdminDTO> getAuctionsByStatus(String status) {
@@ -160,7 +213,6 @@ public class AuctionService {
     @Transactional(readOnly = true)
     public List<AuctionAdminDTO> searchAuctionsByTitle(String title) {
         List<Auction> auctions = auctionRepository.findByTitleContainingIgnoreCase(title);
-        // Re-use the mapping logic from getAuctionsByStatus
         return auctions.stream().map(auction -> {
             AuctionAdminDTO dto = new AuctionAdminDTO();
             dto.setAuctionId(auction.getAuctionId());
@@ -191,19 +243,11 @@ public class AuctionService {
 
     @Transactional
     public void deleteAuction(Integer auctionId) {
-        // Find the auction to be deleted, or throw an exception if it doesn't exist
         Auction auction = auctionRepository.findById(auctionId)
                 .orElseThrow(() -> new EntityNotFoundException("Auction not found with id: " + auctionId));
 
-        // Find all images associated with this auction
         List<AuctionImage> images = auctionImageRepository.findByAuction(auction);
-
-        // Delete all the associated images first to prevent constraint violation errors
-        if (images != null && !images.isEmpty()) {
-            auctionImageRepository.deleteAll(images);
-        }
-
-        // Finally, delete the auction itself
+        auctionImageRepository.deleteAll(images);
         auctionRepository.delete(auction);
     }
 }

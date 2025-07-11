@@ -14,8 +14,11 @@ public class AuctionDetailDTO {
     private String category;
     private String condition;
     private String startingPrice;
-    private String currentBid; // Can be enhanced later with actual bidding logic
+    private String currentBid;
     private LocalDateTime auctionDeadline;
     private List<String> imageUrls;
     private SellerInfoDTO seller;
+
+    // NEW: Added the list to hold bid history
+    private List<BidDTO> bids;
 }

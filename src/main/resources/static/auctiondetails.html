@@ -226,12 +226,13 @@
         }
 
         /* Bid History */
-        .bid-history {
-            margin-top: 40px;
+        .bid-history-card {
+            grid-column: 1 / -1;
             background-color: #fff;
             border-radius: 12px;
             padding: 30px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            margin-top: -10px;
         }
 
         .section-title {
@@ -250,6 +251,8 @@
 
         .bid-list {
             list-style: none;
+            max-height: 400px;
+            overflow-y: auto;
         }
 
         .bid-item {
@@ -257,6 +260,10 @@
             justify-content: space-between;
             padding: 12px 0;
             border-bottom: 1px solid #eee;
+        }
+
+        .bid-item.new-bid {
+            background-color: #e8f5e9;
         }
 
         .bid-item:last-child {
@@ -347,28 +354,6 @@
             color: #004225;
         }
 
-        .contact-seller {
-            margin-top: 20px;
-        }
-
-        .contact-button {
-            width: 100%;
-            padding: 10px;
-            background-color: transparent;
-            border: 2px solid #004225;
-            color: #004225;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .contact-button:hover {
-            background-color: #004225;
-            color: white;
-        }
-
-        /* Responsive */
         @media (max-width: 992px) {
             .auction-container {
                 grid-template-columns: 1fr;
@@ -378,7 +363,7 @@
 </head>
 <body>
 
-<!-- Navigation Bar (same structure as index.html) -->
+<!-- Navigation Bar -->
 <nav class="navbar">
     <div class="nav-wrapper">
         <a class="navbar-brand" href="index.html">
@@ -399,22 +384,20 @@
 
 <!-- Main Content -->
 <div class="auction-container" id="auctionContainer">
-    <!-- Content will be loaded here by JavaScript -->
     <div class="loading-message" style="grid-column: 1 / -1; text-align: center; padding: 50px;">
         <i class="fas fa-spinner fa-spin fa-2x"></i>
         <p>Loading Auction Details...</p>
     </div>
 </div>
 
-<!-- Footer Section (can be added here if desired) -->
-
 <script>
     let countdownInterval;
+    let currentAuctionId = null;
+    let isLoggedIn = false;
 
-    // --- Check login status and update UI ---
     async function checkLoginStatus() {
         try {
-            const response = await fetch('/api/auth/check-session');
+            const response = await fetch('/api/session/user');
             const data = await response.json();
             const loginButton = document.getElementById('loginbutton');
             const signupButton = document.getElementById('signupbutton');
@@ -428,147 +411,143 @@
                 logoutButton.style.display = 'inline-block';
                 profileWrapper.style.display = 'inline-block';
 
-                // NEW: Set profile picture or default
                 if (data.profilePicUrl) {
                     profilePic.src = data.profilePicUrl;
                 } else {
                     profilePic.src = 'https://st3.depositphotos.com/6672868/13701/v/450/depositphotos_137014128-stock-illustration-user-profile-icon.jpg';
                 }
-                return true; // Return true if logged in
+                return true;
             } else {
                 loginButton.style.display = 'inline-block';
                 signupButton.style.display = 'inline-block';
                 logoutButton.style.display = 'none';
                 profileWrapper.style.display = 'none';
-                return false; // Return false if not logged in
+                return false;
             }
         } catch (error) {
             console.error('Error checking login status:', error);
-            return false; // Assume not logged in on error
+            return false;
         }
     }
 
     async function logout() {
         try {
             await fetch('/api/auth/logout', { method: 'POST' });
-            window.location.href = '/index.html'; // Redirect to home after logout
+            window.location.href = '/index.html';
         } catch (error) {
             console.error('Logout failed:', error);
         }
     }
 
-    // --- Main function to fetch and populate data ---
     document.addEventListener('DOMContentLoaded', async function() {
-        // Wait for login status check before proceeding
-        const isLoggedIn = await checkLoginStatus();
+        isLoggedIn = await checkLoginStatus();
         document.getElementById('logoutButton').addEventListener('click', logout);
 
         const params = new URLSearchParams(window.location.search);
-        const auctionId = params.get('id');
+        currentAuctionId = params.get('id');
         const container = document.getElementById('auctionContainer');
 
-        if (!auctionId) {
+        if (!currentAuctionId) {
             container.innerHTML = `<div class="error-message">Auction ID not found. Please go back to the <a href="/index.html">homepage</a>.</div>`;
             return;
         }
 
-        // Pass login status to the fetch function
-        fetchAuctionDetails(auctionId, container, isLoggedIn);
+        fetchAuctionDetails(currentAuctionId);
     });
 
-    async function fetchAuctionDetails(auctionId, container, isLoggedIn) {
+    async function fetchAuctionDetails(auctionId) {
+        const container = document.getElementById('auctionContainer');
         try {
             const response = await fetch(`/api/auctions/${auctionId}`);
-            if (!response.ok) {
-                throw new Error(`Auction not found (status: ${response.status})`);
-            }
+            if (!response.ok) throw new Error('Auction not found');
             const data = await response.json();
-            // Pass login status to the populate function
-            populateAuctionDetails(data, container, isLoggedIn);
+            populateAuctionDetails(data);
         } catch (error) {
             console.error('Failed to fetch auction details:', error);
-            container.innerHTML = `<div class="error-message">Could not load auction details. It may no longer be available.</div>`;
+            container.innerHTML = `<div class="error-message">Could not load auction details.</div>`;
         }
     }
 
-    function populateAuctionDetails(data, container, isLoggedIn) {
-        // Clear loading message
-        container.innerHTML = '';
+    function populateAuctionDetails(data) {
+        const container = document.getElementById('auctionContainer');
+        if (!container.innerHTML.includes('bid-history-card')) {
+            container.innerHTML = '';
 
-        // Create image thumbnails
-        let thumbnailsHTML = '';
-        if (data.imageUrls && data.imageUrls.length > 0) {
-            data.imageUrls.forEach((url, index) => {
-                thumbnailsHTML += `<img src="${url}" alt="${data.title} image ${index + 1}" class="thumbnail ${index === 0 ? 'active' : ''}" />`;
-            });
+            let thumbnailsHTML = data.imageUrls.map((url, index) =>
+                `<img src="${url}" alt="${data.title} image ${index + 1}" class="thumbnail ${index === 0 ? 'active' : ''}" />`
+            ).join('');
+
+            container.innerHTML = `
+                <div class="auction-images">
+                    <div class="thumbnail-container">${thumbnailsHTML}</div>
+                    <img src="${data.imageUrls[0] || 'images/placeholder.png'}" alt="${data.title}" class="main-image" />
+                </div>
+                <div class="auction-details">
+                    <h1 class="auction-title">${data.title}</h1>
+                    <span class="auction-category">${data.category}</span>
+                    <p class="auction-description">${data.description}</p>
+                    <div class="auction-meta">
+                        <div class="meta-item"><i class="fas fa-tag"></i><span>Condition: ${data.condition}</span></div>
+                    </div>
+                    <div class="bidding-section">
+                        <div class="current-bid">
+                            <span class="bid-label">Current Bid</span>
+                            <span class="bid-amount"></span>
+                        </div>
+                        <div class="bid-time"><p>Auction ends in <span class="time-remaining">--</span></p></div>
+                        <form class="bid-form" id="bidForm">
+                            <div class="bid-input-group">
+                                <input type="number" class="bid-input" placeholder="Enter your bid" required />
+                            </div>
+                            <button type="submit" class="bid-button">Place Bid</button>
+                        </form>
+                    </div>
+                </div>
+                <div class="bid-history-card">
+                    <h2 class="section-title"><i class="fas fa-history"></i> Bid History</h2>
+                    <ul class="bid-list"></ul>
+                </div>
+            `;
+            addThumbnailListeners();
+            addBidFormListener();
         }
 
-        // Main HTML structure
-        container.innerHTML = `
-            <div class="auction-images">
-                <div class="thumbnail-container">
-                    ${thumbnailsHTML}
-                </div>
-                <img src="${data.imageUrls && data.imageUrls.length > 0 ? data.imageUrls[0] : 'images/placeholder.png'}" alt="${data.title}" class="main-image" />
-            </div>
-            <div class="auction-details">
-                <h1 class="auction-title">${data.title}</h1>
-                <span class="auction-category">${data.category}</span>
-                <p class="auction-description">${data.description}</p>
-                <div class="auction-meta">
-                    <div class="meta-item">
-                        <i class="fas fa-tag"></i>
-                        <span>Condition: ${data.condition}</span>
-                    </div>
-                </div>
-                <div class="bidding-section">
-                    <div class="current-bid">
-                        <span class="bid-label">Current Bid</span>
-                        <span class="bid-amount">Rs.${parseFloat(data.currentBid).toLocaleString()}</span>
-                    </div>
-                    <div class="bid-time">
-                        <p>Auction ends in <span class="time-remaining">--</span></p>
-                    </div>
-                    <form class="bid-form">
-                        <div class="bid-input-group">
-                            <span class="currency-symbol">Rs.</span>
-                            <input type="number" class="bid-input" placeholder="Enter your bid" min="${parseFloat(data.currentBid) + 1}" style="padding-left: 30px;" />
-                        </div>
-                        <button type="submit" class="bid-button">Place Bid</button>
-                    </form>
-                </div>
-                <div class="seller-info">
-                    <div class="seller-header">
-                        <div class="seller-avatar">${data.seller.sellerAvatarInitial}</div>
-                        <div>
-                            <div class="seller-name">${data.seller.sellerName}</div>
-                        </div>
-                    </div>
-                    <div class="seller-meta">
-                         <div class="seller-meta-item">
-                            <i class="fas fa-user-clock"></i>
-                            <span>${data.seller.memberSince}</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        `;
-
-        // Add event listeners for new dynamic content
-        addThumbnailListeners();
+        updateBidInfo(data);
         startCountdown(data.auctionDeadline);
+    }
 
-        // NEW: Disable bid form if user is not logged in
+    function updateBidInfo(data) {
+        const bidList = document.querySelector('.bid-list');
+        const currentBidAmountEl = document.querySelector('.bid-amount');
+        const bidInput = document.querySelector('.bid-input');
+
+        currentBidAmountEl.textContent = `Rs.${parseFloat(data.currentBid).toLocaleString()}`;
+
+        const nextMinBid = data.bids.length > 0 ? parseFloat(data.currentBid) + 1 : parseFloat(data.startingPrice);
+        bidInput.min = nextMinBid;
+        bidInput.placeholder = `Enter bid (min Rs.${nextMinBid.toLocaleString()})`;
+
+        let bidsHTML = '<p>No bids yet. Be the first!</p>';
+        if (data.bids && data.bids.length > 0) {
+            bidsHTML = data.bids.map((bid, index) => `
+                <li class="bid-item ${index === 0 ? 'new-bid' : ''}">
+                    <div class="bidder-info">
+                        <div class="bidder-avatar">${bid.bidderAvatarInitial}</div>
+                        <div>
+                            <div class="bidder-name">${bid.bidderName}</div>
+                            <div class="bid-time-history">${formatTimeAgo(bid.bidDate)}</div>
+                        </div>
+                    </div>
+                    <div class="bid-amount-history">Rs.${parseFloat(bid.bidAmount).toLocaleString()}</div>
+                </li>
+            `).join('');
+        }
+        bidList.innerHTML = bidsHTML;
+
         if (!isLoggedIn) {
-            const bidInput = document.querySelector('.bid-input');
-            const bidButton = document.querySelector('.bid-button');
-            if (bidInput) {
-                bidInput.disabled = true;
-                bidInput.placeholder = "Please log in to place a bid";
-            }
-            if (bidButton) {
-                bidButton.disabled = true;
-            }
+            bidInput.disabled = true;
+            document.querySelector('.bid-button').disabled = true;
+            bidInput.placeholder = "Please log in to place a bid";
         }
     }
 
@@ -582,12 +561,48 @@
         });
     }
 
+    function addBidFormListener() {
+        const bidForm = document.getElementById('bidForm');
+        if(bidForm) {
+            bidForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const bidInput = e.target.querySelector('.bid-input');
+                const bidButton = e.target.querySelector('.bid-button');
+                const amount = bidInput.value;
+
+                bidButton.disabled = true;
+                bidButton.textContent = 'Placing Bid...';
+
+                try {
+                    const response = await fetch(`/api/auctions/${currentAuctionId}/bids`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ amount: amount })
+                    });
+                    const result = await response.json();
+                    if (!result.success) throw new Error(result.message);
+
+                    const updatedResponse = await fetch(`/api/auctions/${currentAuctionId}`);
+                    const updatedData = await updatedResponse.json();
+                    updateBidInfo(updatedData);
+                    bidInput.value = '';
+
+                } catch (error) {
+                    alert(`Error placing bid: ${error.message}`);
+                } finally {
+                    bidButton.disabled = false;
+                    bidButton.textContent = 'Place Bid';
+                }
+            });
+        }
+    }
+
     function startCountdown(deadline) {
         const countdownElement = document.querySelector('.time-remaining');
         const bidButton = document.querySelector('.bid-button');
         if (!countdownElement || !deadline) return;
 
-        clearInterval(countdownInterval); // Clear any existing timer
+        clearInterval(countdownInterval);
 
         countdownInterval = setInterval(() => {
             const now = new Date().getTime();
@@ -608,6 +623,20 @@
 
             countdownElement.textContent = `${days}d ${hours}h ${minutes}m ${seconds}s`;
         }, 1000);
+    }
+
+    function formatTimeAgo(dateStr) {
+        const date = new Date(dateStr);
+        const now = new Date();
+        const seconds = Math.round((now - date) / 1000);
+        const minutes = Math.round(seconds / 60);
+        const hours = Math.round(minutes / 60);
+        const days = Math.round(hours / 24);
+
+        if (seconds < 60) return `a few seconds ago`;
+        if (minutes < 60) return `${minutes} minutes ago`;
+        if (hours < 24) return `${hours} hours ago`;
+        return `${days} days ago`;
     }
 </script>
 
