@@ -9,4 +9,6 @@ import java.util.List;
 public interface AuctionRepository extends JpaRepository<Auction, Integer> {
     List<Auction> findByAuctionStatus(String status);
     List<Auction> findByUser_UserId(int userId);
+
+    List<Auction> findByTitleContainingIgnoreCase(String title);
 }

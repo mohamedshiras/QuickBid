@@ -3,6 +3,7 @@ package com.example.QuickBid.config;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
+import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
@@ -61,5 +62,10 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addResourceHandler("/static/**")
                 .addResourceLocations("classpath:/static/")
                 .setCachePeriod(3600);
+
+        // ADD THIS: Handle HTML files directly
+        registry.addResourceHandler("/*.html")
+                .addResourceLocations("classpath:/static/")
+                .setCachePeriod(0); // No cache for HTML files during development
     }
 }

@@ -8,7 +8,6 @@
     <link rel="icon" type="image/png" href="images/qb.png" />
     <style>
         :root {
-
             --admin-accent: #004225;
         }
 
@@ -59,6 +58,11 @@
             font-weight: 600;
             transition: background-color 0.3s;
         }
+
+        .login-form button:hover {
+            background-color: #006633;
+        }
+
         .signup-text {
             margin-top: 20px;
             color: #666;
@@ -74,12 +78,20 @@
             color: #e74c3c;
             margin-top: 10px;
             font-size: 14px;
+            padding: 10px;
+            background-color: #fdf2f2;
+            border-radius: 4px;
+            border: 1px solid #fecaca;
         }
 
         .success-message {
             color: #2ecc71;
             margin-top: 10px;
             font-size: 14px;
+            padding: 10px;
+            background-color: #f0f9f4;
+            border-radius: 4px;
+            border: 1px solid #bbf7d0;
         }
 
         .admin-label {
@@ -89,6 +101,11 @@
             display: block;
             text-align: left;
         }
+
+        .loading {
+            opacity: 0.6;
+            pointer-events: none;
+        }
     </style>
 </head>
 <body>
@@ -96,7 +113,7 @@
 <div class="login-card">
     <img src="images/qbrrr.png" alt="QuickBid Admin" class="login-logo" />
 
-    <form class="login-form" id="adminLoginForm" method="POST">
+    <form class="login-form" id="adminLoginForm">
         <label class="admin-label">Admin Username</label>
         <input type="text" name="username" placeholder="Enter admin username" required />
 
@@ -115,36 +132,74 @@
     document.getElementById('adminLoginForm').addEventListener('submit', function(e) {
         e.preventDefault();
 
-        const formData = new FormData(this);
+        const form = this;
+        const formData = new FormData(form);
         const messageDiv = document.getElementById('message');
-        messageDiv.innerHTML = ''; // Clear previous messages
+        const submitButton = form.querySelector('button[type="submit"]');
+
+        // Clear previous messages
+        messageDiv.innerHTML = '';
+
+        // Show loading state
+        submitButton.textContent = 'Logging in...';
+        submitButton.disabled = true;
+        form.classList.add('loading');
+
+        // Debug logs
+        console.log('Submitting login form...');
+        console.log('Username:', formData.get('username'));
+        console.log('API URL:', '/admin/api/login');
 
         fetch('/admin/login', {
             method: 'POST',
-            body: new URLSearchParams(formData), // Send as form-urlencoded
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded'
-            }
+            body: formData
         })
             .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
+                console.log('Response status:', response.status);
+                console.log('Response headers:', response.headers);
+                console.log('Content-Type:', response.headers.get('content-type'));
+
+                // Check if response is JSON
+                const contentType = response.headers.get('content-type');
+                if (contentType && contentType.includes('application/json')) {
+                    return response.json();
+                } else {
+                    // If not JSON, get the text content (probably HTML error page)
+                    return response.text().then(text => {
+                        console.error('Received non-JSON response:', text);
+                        throw new Error(`Server returned HTML instead of JSON. Status: ${response.status}`);
+                    });
                 }
-                return response.json();
             })
             .then(data => {
+                console.log('Parsed JSON data:', data);
+
                 if (data.success) {
                     messageDiv.innerHTML = '<div class="success-message">' + data.message + '</div>';
                     setTimeout(() => {
-                        window.location.href = '/admin/dashboard';
+                        window.location.href = '/admindash.html';
                     }, 1000);
                 } else {
                     messageDiv.innerHTML = '<div class="error-message">' + data.message + '</div>';
                 }
             })
             .catch(error => {
-                messageDiv.innerHTML = '<div class="error-message">Login failed. Please try again.</div>';
-                console.error('Error:', error);
+                console.error('Login error:', error);
+                let errorMessage = 'Login failed. Please try again.';
+
+                if (error.message.includes('HTML instead of JSON')) {
+                    errorMessage = 'Server error: Please check if the admin API is running correctly.';
+                } else if (error.message.includes('Failed to fetch')) {
+                    errorMessage = 'Network error: Cannot connect to server. Please check if the server is running.';
+                }
+
+                messageDiv.innerHTML = `<div class="error-message">${errorMessage}</div>`;
+            })
+            .finally(() => {
+                // Reset loading state
+                submitButton.textContent = 'Login';
+                submitButton.disabled = false;
+                form.classList.remove('loading');
             });
     });
 </script>

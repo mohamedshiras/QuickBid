@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Manage Account | QuickBid</title>
+    <link rel="shortcut icon" href="images/qb.png" type="image/x-icon" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    <link rel="stylesheet" href="/css/style.css"/>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
+        }
+
+        .main-container {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .page-title {
+            font-size: 32px;
+            font-weight: 700;
+            color: #004225;
+            margin-bottom: 10px;
+        }
+
+        .divider {
+            width: 80px;
+            height: 4px;
+            background: linear-gradient(90deg, #004225, #fffb00);
+            margin: 0 auto;
+            border-radius: 2px;
+        }
+
+        .account-section {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            font-size: 22px;
+            font-weight: 600;
+            color: #004225;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e8e8e8;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #004225;
+            box-shadow: 0 0 0 3px rgba(0, 66, 37, 0.1);
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #004225, #002d1a);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 66, 37, 0.3);
+        }
+
+        .btn-danger {
+            background: #d9534f;
+        }
+
+        .btn-danger:hover {
+            background: #c9302c;
+            box-shadow: 0 6px 20px rgba(201, 48, 44, 0.3);
+        }
+
+        /* Profile Picture Section */
+        .profile-pic-section {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+        }
+
+        .profile-pic-preview {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid #004225;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .profile-pic-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        #profilePicInput {
+            display: none;
+        }
+
+        .file-upload-label {
+            background: #f0f0f0;
+            color: #333;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .file-upload-label:hover {
+            background: #e0e0e0;
+        }
+
+        .message-area {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 14px;
+            text-align: center;
+            display: none;
+        }
+
+        .message-area.success {
+            background-color: #dff0d8;
+            color: #3c763d;
+            border: 1px solid #d6e9c6;
+        }
+
+        .message-area.error {
+            background-color: #f2dede;
+            color: #a94442;
+            border: 1px solid #ebccd1;
+        }
+
+    </style>
+</head>
+<body>
+
+<!-- Navigation Bar -->
+<nav class="navbar">
+    <div class="nav-wrapper">
+        <a class="navbar-brand" href="index.html">
+            <img src="images/qbrrr.png" alt="QuickBid Logo" class="nav-logo" />
+        </a>
+        <div class="nav-buttons">
+            <button class="button" id="loginbutton" onclick="window.location.href='/login.html'">Log In</button>
+            <button class="button" id="signupbutton" onclick="window.location.href='/signup.html'">Sign Up</button>
+            <button class="button" id="logoutButton" style="display: none;">Log Out</button>
+            <div class="profile-wrapper" id="profileWrapper" style="display: none;">
+                <img src="images/default-profile.png" alt="Profile" class="profile-pic" id="profilePicNav" onerror="this.onerror=null; this.src='https://st3.depositphotos.com/6672868/13701/v/450/depositphotos_137014128-stock-illustration-user-profile-icon.jpg';">
+            </div>
+        </div>
+    </div>
+</nav>
+
+<!-- Main Content -->
+<div class="main-container">
+    <div class="page-header">
+        <h1 class="page-title">Manage Your Account</h1>
+        <div class="divider"></div>
+    </div>
+
+    <!-- Profile Picture Section -->
+    <div class="account-section">
+        <h2 class="section-title"><i class="fas fa-user-circle"></i> Profile Picture</h2>
+        <div class="profile-pic-section">
+            <img src="https://st3.depositphotos.com/6672868/13701/v/450/depositphotos_137014128-stock-illustration-user-profile-icon.jpg" alt="Profile Preview" class="profile-pic-preview" id="profilePicPreview">
+            <div class="profile-pic-actions">
+                <input type="file" id="profilePicInput" accept="image/png, image/jpeg">
+                <label for="profilePicInput" class="file-upload-label"><i class="fas fa-upload"></i> Choose Image</label>
+                <button class="btn" id="uploadPicBtn"><i class="fas fa-save"></i> Upload Picture</button>
+                <button class="btn btn-danger" id="removePicBtn"><i class="fas fa-trash"></i> Remove Picture</button>
+            </div>
+        </div>
+        <div class="message-area" id="picMessage"></div>
+    </div>
+
+    <!-- Change Password Section -->
+    <div class="account-section">
+        <h2 class="section-title"><i class="fas fa-key"></i> Change Password</h2>
+        <form id="passwordForm">
+            <div class="form-group">
+                <label for="currentPassword" class="form-label">Current Password</label>
+                <input type="password" id="currentPassword" class="form-input" required>
+            </div>
+            <div class="form-group">
+                <label for="newPassword" class="form-label">New Password</label>
+                <input type="password" id="newPassword" class="form-input" required>
+            </div>
+            <div class="form-group">
+                <label for="confirmNewPassword" class="form-label">Confirm New Password</label>
+                <input type="password" id="confirmNewPassword" class="form-input" required>
+            </div>
+            <button type="submit" class="btn">Change Password</button>
+        </form>
+        <div class="message-area" id="passwordMessage"></div>
+    </div>
+</div>
+
+<script>
+    // --- Authentication and User Info ---
+    let currentUserId = null;
+
+    async function checkLoginStatus() {
+        try {
+            const response = await fetch('/api/auth/check-session');
+            const data = await response.json();
+            if (data.loggedIn) {
+                currentUserId = data.userId;
+                document.getElementById('loginbutton').style.display = 'none';
+                document.getElementById('signupbutton').style.display = 'none';
+                document.getElementById('logoutButton').style.display = 'inline-block';
+                document.getElementById('profileWrapper').style.display = 'inline-block';
+
+                const profilePicSrc = data.profilePicUrl || 'https://st3.depositphotos.com/6672868/13701/v/450/depositphotos_137014128-stock-illustration-user-profile-icon.jpg';
+                document.getElementById('profilePicNav').src = profilePicSrc;
+                document.getElementById('profilePicPreview').src = profilePicSrc;
+            } else {
+                // If not logged in, redirect to login page
+                window.location.href = '/login.html';
+            }
+        } catch (error) {
+            console.error('Error checking login status:', error);
+            window.location.href = '/login.html';
+        }
+    }
+
+    async function logout() {
+        try {
+            await fetch('/api/auth/logout', { method: 'POST' });
+            window.location.href = '/index.html';
+        } catch (error) {
+            console.error('Logout failed:', error);
+        }
+    }
+
+    // --- Message Display Helper ---
+    function showMessage(elementId, message, isSuccess) {
+        const el = document.getElementById(elementId);
+        el.textContent = message;
+        el.className = 'message-area'; // Reset classes
+        el.classList.add(isSuccess ? 'success' : 'error');
+        el.style.display = 'block';
+        setTimeout(() => { el.style.display = 'none'; }, 5000);
+    }
+
+    // --- Profile Picture Logic ---
+    let selectedFile = null;
+    const profilePicInput = document.getElementById('profilePicInput');
+    const profilePicPreview = document.getElementById('profilePicPreview');
+
+    profilePicInput.addEventListener('change', (event) => {
+        selectedFile = event.target.files[0];
+        if (selectedFile) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                profilePicPreview.src = e.target.result;
+            };
+            reader.readAsDataURL(selectedFile);
+        }
+    });
+
+    document.getElementById('uploadPicBtn').addEventListener('click', async () => {
+        if (!selectedFile) {
+            showMessage('picMessage', 'Please choose an image first.', false);
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('profilePicture', selectedFile);
+
+        try {
+            // NOTE: You need to create this backend endpoint
+            const response = await fetch('/api/user/profile-picture', {
+                method: 'POST',
+                body: formData,
+                // Headers are often not needed as FormData sets the correct multipart content type
+            });
+
+            const result = await response.json();
+            showMessage('picMessage', result.message, result.success);
+            if(result.success) {
+                setTimeout(() => window.location.reload(), 1500);
+            }
+        } catch (error) {
+            console.error('Error uploading picture:', error);
+            showMessage('picMessage', 'An error occurred during upload.', false);
+        }
+    });
+
+    document.getElementById('removePicBtn').addEventListener('click', async () => {
+        if (!confirm('Are you sure you want to remove your profile picture?')) {
+            return;
+        }
+        try {
+            // NOTE: You need to create this backend endpoint
+            const response = await fetch('/api/user/profile-picture', {
+                method: 'DELETE',
+            });
+            const result = await response.json();
+            showMessage('picMessage', result.message, result.success);
+            if(result.success) {
+                setTimeout(() => window.location.reload(), 1500);
+            }
+        } catch (error) {
+            console.error('Error removing picture:', error);
+            showMessage('picMessage', 'An error occurred while removing the picture.', false);
+        }
+    });
+
+    // --- Change Password Logic ---
+    document.getElementById('passwordForm').addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const currentPassword = document.getElementById('currentPassword').value;
+        const newPassword = document.getElementById('newPassword').value;
+        const confirmNewPassword = document.getElementById('confirmNewPassword').value;
+
+        if (newPassword !== confirmNewPassword) {
+            showMessage('passwordMessage', 'New passwords do not match.', false);
+            return;
+        }
+
+        if (newPassword.length < 6) {
+            showMessage('passwordMessage', 'New password must be at least 6 characters long.', false);
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('currentPassword', currentPassword);
+        formData.append('newPassword', newPassword);
+
+        try {
+            // NOTE: You need to create this backend endpoint
+            const response = await fetch('/api/auth/change-password', {
+                method: 'POST',
+                body: formData,
+            });
+            const result = await response.json();
+            showMessage('passwordMessage', result.message, result.success);
+            if(result.success) {
+                document.getElementById('passwordForm').reset();
+            }
+        } catch (error) {
+            console.error('Error changing password:', error);
+            showMessage('passwordMessage', 'An error occurred while changing the password.', false);
+        }
+    });
+
+    // --- Initial Load ---
+    document.addEventListener('DOMContentLoaded', () => {
+        checkLoginStatus();
+        document.getElementById('logoutButton').addEventListener('click', logout);
+    });
+</script>
+
+</body>
+</html>

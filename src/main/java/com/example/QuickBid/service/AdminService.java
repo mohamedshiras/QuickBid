@@ -5,43 +5,33 @@ import com.example.QuickBid.repository.AdminRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Objects;
+import java.util.Optional;
+
 @Service
 public class AdminService {
 
     @Autowired
     private AdminRepository adminRepository;
 
+    public Admin authenticateAdmin(String username, String password) {
+        Optional<Admin> adminOptional = adminRepository.findByAdminUsername(username);
+
+        if (adminOptional.isPresent()) {
+            Admin admin = adminOptional.get();
+            // Plain text password comparison
+            if (Objects.equals(admin.getAdminPassword(), password)) {
+                return admin;
+            }
+        }
+        return null; // Return null if user not found or password doesn't match
+    }
+
     public Admin getByUsername(String username) {
         if (username == null || username.trim().isEmpty()) {
             return null;
         }
         return adminRepository.findByAdminUsername(username.trim()).orElse(null);
-    }
-
-    public boolean authenticateAdmin(String username, String password) {
-        System.out.println("DEBUG: Service authenticateAdmin called with username: " + username);
-
-        // Input validation
-        if (username == null || username.trim().isEmpty() ||
-                password == null || password.isEmpty()) {
-            System.out.println("DEBUG: Input validation failed");
-            return false;
-        }
-
-        Admin admin = getByUsername(username.trim());
-        if (admin == null) {
-            System.out.println("DEBUG: Admin not found for username: " + username);
-            return false;
-        }
-
-        System.out.println("DEBUG: Found admin - Password from DB: '" + admin.getAdminPassword() +
-                "', Password provided: '" + password + "'");
-
-        // Plain text password comparison for testing
-        boolean passwordMatch = admin.getAdminPassword().equals(password);
-        System.out.println("DEBUG: Password match: " + passwordMatch);
-
-        return passwordMatch;
     }
 
     // Method to create new admin for testing

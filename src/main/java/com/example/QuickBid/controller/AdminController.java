@@ -1,176 +1,90 @@
 package com.example.QuickBid.controller;
 
+import com.example.QuickBid.dto.AuctionAdminDTO;
 import com.example.QuickBid.model.Admin;
+import com.example.QuickBid.model.User;
 import com.example.QuickBid.service.AdminService;
-import jakarta.servlet.http.HttpServletRequest;
+import com.example.QuickBid.service.AuctionService;
+import com.example.QuickBid.service.UserService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/admin")
+@RequestMapping("/api/admin")
 public class AdminController {
 
     @Autowired
-    private AdminService adminService;
+    private UserService userService;
 
-    @PostMapping("/login")
-    public Map<String, Object> login(@RequestBody Map<String, String> requestBody,
-                                     HttpServletRequest request) {
+    @Autowired
+    private AuctionService auctionService;
 
-        Map<String, Object> response = new HashMap<>();
 
-        String username = requestBody.get("username");
-        String password = requestBody.get("password");
+    // --- User Management Endpoints ---
 
-        System.out.println("DEBUG: Login attempt - Username: " + username + ", Password: " + password);
-
-        // Input validation
-        if (username == null || username.trim().isEmpty()) {
-            response.put("success", false);
-            response.put("message", "Username is required.");
-            return response;
-        }
-
-        if (password == null || password.isEmpty()) {
-            response.put("success", false);
-            response.put("message", "Password is required.");
-            return response;
-        }
-
-        // Check if admin exists first
-        Admin adminCheck = adminService.getByUsername(username);
-        System.out.println("DEBUG: Admin found: " + (adminCheck != null ? "Yes" : "No"));
-        if (adminCheck != null) {
-            System.out.println("DEBUG: Admin details - ID: " + adminCheck.getAdminID() +
-                    ", Username: " + adminCheck.getAdminUsername() +
-                    ", Password: " + adminCheck.getAdminPassword());
-        }
-
-        // Authenticate admin using the service method
-        if (adminService.authenticateAdmin(username, password)) {
-            // Get the admin object for session storage
-            Admin admin = adminService.getByUsername(username.trim());
-
-            // Invalidate any existing session to prevent conflicts
-            HttpSession existingSession = request.getSession(false);
-            if (existingSession != null) {
-                existingSession.invalidate();
-            }
-
-            // Create new session for logged in admin
-            HttpSession session = request.getSession(true);
-            session.setAttribute("loggedInAdmin", admin);
-
-            response.put("success", true);
-            response.put("message", "Login successful!");
-            response.put("adminId", admin.getAdminID());
-            response.put("adminUsername", admin.getAdminUsername());
+    @GetMapping("/users")
+    public ResponseEntity<List<User>> getUsers(@RequestParam(required = false) String status) {
+        // CORRECTED: This now properly handles requests for "all" users vs. a specific status.
+        List<User> users;
+        if (status == null || "all".equalsIgnoreCase(status)) {
+            users = userService.getAllUsers();
         } else {
-            System.out.println("DEBUG: Authentication failed for username: " + username);
-            response.put("success", false);
-            response.put("message", "Invalid username or password.");
+            users = userService.getUsersByStatus(status);
         }
-
-        return response;
+        return ResponseEntity.ok(users);
     }
 
-    @PostMapping("/logout")
-    public Map<String, Object> logout(HttpSession session) {
-        Map<String, Object> response = new HashMap<>();
-
-        if (session != null) {
-            session.invalidate();
-            response.put("success", true);
-            response.put("message", "Logged out successfully.");
-        } else {
-            response.put("success", false);
-            response.put("message", "No active session found.");
-        }
-
-        return response;
-    }
-
-    @GetMapping("/dashboard")
-    public Map<String, Object> dashboard(HttpSession session) {
-        Map<String, Object> response = new HashMap<>();
-
-        if (session == null) {
-            response.put("success", false);
-            response.put("message", "Unauthorized - No session");
-            return response;
-        }
-
-        Admin admin = (Admin) session.getAttribute("loggedInAdmin");
-
-        if (admin != null) {
-            response.put("success", true);
-            response.put("message", "Welcome, " + admin.getAdminUsername());
-            response.put("adminId", admin.getAdminID());
-            response.put("adminUsername", admin.getAdminUsername());
-        } else {
-            response.put("success", false);
-            response.put("message", "Unauthorized - Please login");
-        }
-
-        return response;
-    }
-
-    // Additional endpoint to create admin for testing
-    @PostMapping("/create")
-    public Map<String, Object> createAdmin(@RequestBody Map<String, String> requestBody) {
-        Map<String, Object> response = new HashMap<>();
-
-        String username = requestBody.get("username");
-        String password = requestBody.get("password");
-
-        if (username == null || username.trim().isEmpty()) {
-            response.put("success", false);
-            response.put("message", "Username is required.");
-            return response;
-        }
-
-        if (password == null || password.isEmpty()) {
-            response.put("success", false);
-            response.put("message", "Password is required.");
-            return response;
-        }
-
-        if (adminService.adminExists(username)) {
-            response.put("success", false);
-            response.put("message", "Admin with this username already exists.");
-            return response;
-        }
-
+    @PutMapping("/users/{id}/status")
+    public ResponseEntity<?> updateUserStatus(@PathVariable Integer id, @RequestBody Map<String, String> body) {
         try {
-            Admin admin = adminService.createAdmin(username, password);
-            response.put("success", true);
-            response.put("message", "Admin created successfully.");
-            response.put("adminId", admin.getAdminID());
-            response.put("adminUsername", admin.getAdminUsername());
+            userService.updateUserStatus(id, body.get("status"));
+            return ResponseEntity.ok().build();
         } catch (Exception e) {
-            response.put("success", false);
-            response.put("message", "Error creating admin: " + e.getMessage());
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
-
-        return response;
     }
 
-    // Endpoint to check if admin exists (for testing)
-    @GetMapping("/exists/{username}")
-    public Map<String, Object> adminExists(@PathVariable String username) {
-        Map<String, Object> response = new HashMap<>();
-        boolean exists = adminService.adminExists(username);
-        response.put("exists", exists);
-        response.put("username", username);
-        return response;
+    @DeleteMapping("/users/{id}")
+    public ResponseEntity<?> deleteUser(@PathVariable Integer id) {
+        try {
+            userService.DeleteUser(id);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
-    @GetMapping("/test")
-    public String test() {
-        return "Controller is working!";
+    // --- Auction Management Endpoints ---
+
+    @GetMapping("/auctions")
+    public ResponseEntity<List<AuctionAdminDTO>> getAuctions(@RequestParam(required = false) String status) {
+        List<AuctionAdminDTO> auctions = auctionService.getAuctionsByStatus(status);
+        return ResponseEntity.ok(auctions);
+    }
+
+    @PutMapping("/auctions/{id}/status")
+    public ResponseEntity<?> updateAuctionStatus(@PathVariable Integer id, @RequestBody Map<String, String> body) {
+        try {
+            auctionService.updateAuctionStatus(id, body.get("status"));
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @DeleteMapping("/auctions/{id}")
+    public ResponseEntity<?> deleteAuction(@PathVariable Integer id) {
+        try {
+            auctionService.deleteAuction(id);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 }

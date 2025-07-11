@@ -471,7 +471,7 @@
                 </h3>
 
                 <div class="image-upload-container" onclick="document.getElementById('images').click()">
-                <div class="upload-icon">
+                    <div class="upload-icon">
                         <i class="fas fa-cloud-upload-alt"></i>
                     </div>
                     <div class="upload-text">Click to upload images</div>
@@ -550,7 +550,7 @@
         }
     }
 
-    // 🔄 NEW: Fetch session info and control UI
+    // UPDATED: Check session and redirect if not logged in
     window.addEventListener('DOMContentLoaded', async () => {
         try {
             const res = await fetch('/api/session/user');
@@ -559,15 +559,16 @@
                 document.getElementById('userId').value = data.userId;
                 document.getElementById('loginbutton').style.display = 'none';
             } else {
-                // Optionally redirect if not logged in
-                // window.location.href = "/login.html";
+                window.location.href = "/login.html";
             }
         } catch (err) {
-            console.error("Session fetch failed", err);
+            console.error("Session fetch failed, redirecting to login.", err);
+            alert("Could not verify login status. Please log in to continue.");
+            window.location.href = "/login.html";
         }
     });
 
-    // 📝 Submit form
+    // Submit form
     document.getElementById('auctionForm').addEventListener('submit', async function(e) {
         e.preventDefault();
         document.body.classList.add('loading');

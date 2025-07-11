@@ -42,6 +42,10 @@ public class User {
     @Column(name = "createdAt")
     private LocalDateTime createdAt;
 
+    @Lob
+    @Column(name = "profile_picture", columnDefinition="LONGBLOB", nullable = true)
+    private byte[] profilePicture;
+
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "whoApproved", nullable = true)
     private Admin admin;

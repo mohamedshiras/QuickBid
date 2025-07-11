@@ -30,4 +30,22 @@ public class SessionController {
 
         return ResponseEntity.ok(response);
     }
+
+    @GetMapping("/admin")
+    public ResponseEntity<Map<String, Object>> getSessionAdmin(HttpSession session) {
+        Map<String, Object> response = new HashMap<>();
+        Integer adminId = (Integer) session.getAttribute("adminId");
+        String adminUsername = (String) session.getAttribute("adminUsername");
+        String userType = (String) session.getAttribute("userType");
+
+        if (adminId != null && "ADMIN".equals(userType)) {
+            response.put("loggedIn", true);
+            response.put("adminId", adminId);
+            response.put("adminUsername", adminUsername);
+        } else {
+            response.put("loggedIn", false);
+        }
+
+        return ResponseEntity.ok(response);
+    }
 }

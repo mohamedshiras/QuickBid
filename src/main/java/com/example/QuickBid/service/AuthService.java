@@ -59,7 +59,7 @@ public class AuthService {
             newUser.setUsername(username);
             newUser.setEmail(email.toLowerCase());
             newUser.setPassword(password);
-            newUser.setAccountStatus("pending confirmation");
+            newUser.setAccountStatus("pending");
             newUser.setCreatedAt(LocalDateTime.now());
 
             return userRepository.save(newUser);

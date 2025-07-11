@@ -5,10 +5,11 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class AuctionCardDTO {
+public class AuctionAdminDTO {
     private int auctionId;
     private String title;
-    private String description;
+    private String sellerName;
     private String startingPrice;
-    private String imageUrl; // Will hold the Base64 encoded image string
+    private String auctionStatus;
+    private String imageUrl; // To hold the Base64 image data URL
 }

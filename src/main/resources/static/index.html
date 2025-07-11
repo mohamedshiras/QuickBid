@@ -247,6 +247,21 @@
         .quick-replies { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
         .quick-reply { background-color: #f0f2ff; color: #4a6bff; border: 1px solid #d0d6ff; border-radius: 15px; padding: 5px 12px; font-size: 12px; cursor: pointer; }
 
+        /* Profile pic */
+        .profile-wrapper {
+            display: inline-block;
+            margin-left: 10px;
+        }
+
+        .profile-pic {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            cursor: pointer;
+            border: 2px solid #004225;
+        }
+
     </style>
 </head>
 <body>
@@ -260,6 +275,12 @@
         <div class="nav-buttons">
             <button class="button" id="loginbutton" onclick="window.location.href='/login.html'">Log In</button>
             <button class="button" id="signupbutton" onclick="window.location.href='/signup.html'">Sign Up</button>
+            <button class="button" id="logoutButton" style="display: none;">Log Out</button>
+            <div class="profile-wrapper" id="profileWrapper" style="display: none;"
+                 onclick="window.location.href='manageaccount.html'" style="cursor: pointer;">
+                <img src="images/default-profile.png" alt="Profile" class="profile-pic" id="profilePic"
+                     onerror="this.onerror=null; this.src='https://st3.depositphotos.com/6672868/13701/v/450/depositphotos_137014128-stock-illustration-user-profile-icon.jpg';">
+            </div>
         </div>
     </div>
 </nav>
@@ -331,7 +352,6 @@
             <button id="chatbotSend"><i class="fas fa-paper-plane"></i></button>
         </div>
     </div>
-    <!-- NEW HTML STRUCTURE FOR CHATBOT BUTTON -->
     <div class="chatbot-button" id="chatbotButton">
         <div class="chatbot-icon"><i class="fas fa-comment-dots"></i></div>
         <div class="chatbot-text">Chat Now</div>
@@ -348,10 +368,10 @@
                     Empowering bidders with advanced auction tools to improve bidding experience and maximize value discovery.
                 </p>
                 <div class="social-icons">
-                    <a aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
-                    <a aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
-                    <a aria-label="Instagram"><i class="fab fa-instagram"></i></a>
-                    <a aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                    <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+                    <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                    <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
                 </div>
                 <a href="#" class="back-to-top">
                     <i class="fas fa-chevron-up"></i>
@@ -396,8 +416,69 @@
 </div>
 
 <script>
+    // --- Check login status and update UI ---
+    async function checkLoginStatus() {
+        try {
+            // Corrected endpoint to match AuthController
+            const response = await fetch('/api/auth/check-session');
+            const data = await response.json();
+
+            const loginButton = document.getElementById('loginbutton');
+            const signupButton = document.getElementById('signupbutton');
+            const logoutButton = document.getElementById('logoutButton');
+            const profileWrapper = document.getElementById('profileWrapper');
+            const profilePic = document.getElementById('profilePic');
+
+            if (data.loggedIn) {
+                // User is logged in
+                loginButton.style.display = 'none';
+                signupButton.style.display = 'none';
+                logoutButton.style.display = 'inline-block';
+                profileWrapper.style.display = 'inline-block';
+
+                // NEW: Set profile picture or default
+                if (data.profilePicUrl) {
+                    profilePic.src = data.profilePicUrl;
+                } else {
+                    profilePic.src = 'https://st3.depositphotos.com/6672868/13701/v/450/depositphotos_137014128-stock-illustration-user-profile-icon.jpg';
+                }
+            } else {
+                // User is logged out
+                loginButton.style.display = 'inline-block';
+                signupButton.style.display = 'inline-block';
+                logoutButton.style.display = 'none';
+                profileWrapper.style.display = 'none';
+            }
+        } catch (error) {
+            console.error('Error checking login status:', error);
+            // Default to logged-out view on error
+            document.getElementById('loginbutton').style.display = 'inline-block';
+            document.getElementById('signupbutton').style.display = 'inline-block';
+            document.getElementById('logoutButton').style.display = 'none';
+            document.getElementById('profileWrapper').style.display = 'none';
+        }
+    }
+
+    // --- Logout functionality ---
+    async function logout() {
+        try {
+            // Corrected endpoint to match AuthController
+            await fetch('/api/auth/logout', { method: 'POST' });
+            window.location.reload(); // Refresh the page to update the UI
+        } catch (error) {
+            console.error('Logout failed:', error);
+        }
+    }
+
+
     // --- Fetch and display active auctions ---
     document.addEventListener('DOMContentLoaded', function() {
+        // Check login status as soon as the page loads
+        checkLoginStatus();
+
+        // Add event listener for the new logout button
+        document.getElementById('logoutButton').addEventListener('click', logout);
+
         const auctionsContainer = document.getElementById('auctions-container');
 
         async function fetchActiveAuctions() {
@@ -445,7 +526,7 @@
     });
 
     function viewAuctionDetails(auctionId) {
-        window.location.href = `/auction-details.html?id=${auctionId}`;
+        window.location.href = `/auctiondetails.html?id=${auctionId}`;
     }
 
 
