@@ -18,20 +18,69 @@
             font-family: 'DM Sans', sans-serif;
             background-color: #f8f9fa;
         }
+
+        /* --- CARD STYLES --- */
         .card {
+            background: #ffffff;
+            border: 1px solid #e9ecef;
+            border-radius: 12px;
+            overflow: hidden; /* Ensures image corners are rounded */
             cursor: pointer;
             transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-            height: 100%; /* Ensure cards in a row are the same height */
+            height: 100%;
             display: flex;
             flex-direction: column;
         }
         .card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.08);
+        }
+        .card-img-top {
+            width: 100%;
+            aspect-ratio: 1 / 1; /* Creates a square image container */
+            object-fit: cover; /* Ensures image fills the space without stretching */
+            border-bottom: 1px solid #e9ecef;
         }
         .card-body {
-            flex-grow: 1; /* Allows body to expand and push price down */
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
         }
+        .card-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #212529;
+            margin-bottom: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .card-description {
+            font-size: 14px;
+            color: #6c757d;
+            margin-bottom: 12px;
+            flex-grow: 1;
+        }
+        .card-price {
+            font-size: 14px;
+            font-weight: 500;
+            color: #343a40;
+        }
+
+        /* --- AUCTIONS SECTION STYLES --- */
+        .auctions-section {
+            padding: 0 35px; /* Sets left and right padding for the entire section */
+            margin-top: 40px;
+        }
+        .auctions-section-title {
+            margin-bottom: 20px;
+            font-size: 24px;
+            font-weight: 700;
+            color: #212529;
+        }
+
+
         .loading-message, .error-message {
             grid-column: 1 / -1; /* Make message span all columns */
             width: 100%;
@@ -41,7 +90,7 @@
             color: #666;
         }
 
-        /* NEW: Grid layout for auction cards */
+        /* Grid layout for auction cards */
         #auctions-container {
             display: grid;
             grid-template-columns: repeat(5, 1fr); /* 5 columns on large screens */
@@ -68,54 +117,94 @@
             #auctions-container {
                 grid-template-columns: 1fr; /* 1 column on mobile */
             }
+            .auctions-section {
+                padding: 0 20px; /* Adjust padding for smaller screens */
+            }
         }
 
 
-        /* Chatbot Styles - Modified to match your color pattern */
+        /* Chatbot Styles */
         .chatbot-container {
             position: fixed;
-            bottom: 100px; /* Adjusted to align with post auction container */
+            bottom: 100px;
             right: 30px;
             z-index: 1000;
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            align-items: flex-end; /* Align items to the right */
         }
 
+        /* --- CHATBOT BUTTON STYLES --- */
         .chatbot-button {
-            background-color:#004225;
-            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            background: linear-gradient(135deg, #004225 0%, #002d1a 100%);
+            border-radius: 50px;
+            overflow: hidden;
             width: 60px;
             height: 60px;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             cursor: pointer;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-            transition: all 0.3s ease;
             border: none;
             outline: none;
-            animation: float 3s ease-in-out infinite;
-        }
-
-        @keyframes float {
-            0% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
-            100% { transform: translateY(0px); }
+            animation: pulse-chat 2s ease-in-out infinite; /* New pulse animation */
         }
 
         .chatbot-button:hover {
-            background-color: #004225;
-            transform: scale(1.05);
-            animation: none;
+            width: 180px;
+            background: white;
+            animation: none; /* Stop pulsing on hover */
+            box-shadow: 0 12px 35px rgba(0, 66, 37, 0.6), 0 0 30px rgba(255, 251, 0, 0.5);
         }
 
-        .chatbot-button i {
+        .chatbot-icon {
+            color: white;
             font-size: 24px;
+            min-width: 60px;
+            height: 60px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: color 0.3s ease;
+        }
+
+        .chatbot-button:hover .chatbot-icon {
+            color: black;
+        }
+
+        .chatbot-text {
+            color: white;
+            font-weight: 600;
+            font-size: 16px;
+            white-space: nowrap;
+            opacity: 0;
+            transform: translateX(-20px);
+            transition: all 0.3s ease;
+            padding-right: 20px;
+        }
+
+        .chatbot-button:hover .chatbot-text {
+            opacity: 1;
+            transform: translateX(0);
+            color: black;
+        }
+
+        /* New pulse animation for chatbot button */
+        @keyframes pulse-chat {
+            0% {
+                box-shadow: 0 8px 25px rgba(0, 66, 37, 0.4), 0 0 20px rgba(255, 251, 0, 0.3);
+            }
+            50% {
+                box-shadow: 0 8px 25px rgba(0, 66, 37, 0.6), 0 0 25px rgba(255, 251, 0, 0.4);
+            }
+            100% {
+                box-shadow: 0 8px 25px rgba(0, 66, 37, 0.4), 0 0 20px rgba(255, 251, 0, 0.3);
+            }
         }
 
         .chatbot-window {
+            margin-bottom: 20px;
             width: 350px;
             height: 450px;
             background-color: white;
@@ -153,11 +242,10 @@
         .user-message { background-color: #004225; color: white; border-top-right-radius: 5px; align-self: flex-end; }
         .chatbot-input { display: flex; padding: 10px; border-top: 1px solid #eee; background-color: white; }
         .chatbot-input input { flex: 1; padding: 10px 15px; border: 1px solid #ddd; border-radius: 25px; outline: none; font-size: 14px; font-family: 'DM Sans', sans-serif; }
-        .chatbot-input button { background-color:#004225; color: white; border: none; border-radius: 50%; width: 40px; height: 40px; margin-left: 10px; cursor: pointer; display: flex; justify-content: center; align-items: center; transition: background-color 0.2s; }
-        .chatbot-input button:hover { background-color: #004225; }
+        .chatbot-input button { background-color:#004225; color: white; border: none; border-radius: 50%; width: 40px; height: 40px; margin-left: 10px; cursor: pointer; display: flex; justify-content: center;
+            align-items: center; transition: background-color 0.2s; }
         .quick-replies { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
-        .quick-reply { background-color: #f0f2ff; color: #4a6bff; border: 1px solid #d0d6ff; border-radius: 15px; padding: 5px 12px; font-size: 12px; cursor: pointer; transition: all 0.2s; font-family: 'DM Sans', sans-serif; }
-        .quick-reply:hover { background-color: #d0d6ff; }
+        .quick-reply { background-color: #f0f2ff; color: #4a6bff; border: 1px solid #d0d6ff; border-radius: 15px; padding: 5px 12px; font-size: 12px; cursor: pointer; }
 
     </style>
 </head>
@@ -202,16 +290,16 @@
 </div>
 
 <!-- New Auctions Section -->
-<h1 style="padding-left: 35px; margin-bottom: 20px;">Newly Listed</h1>
-<div class="container" style="margin-top: 0; padding-top: 0;">
-    <!-- Auction cards will be dynamically inserted here -->
+<section class="auctions-section">
+    <h1 class="auctions-section-title">New Auctions for You</h1>
     <div id="auctions-container">
         <!-- Initially show a loading message -->
         <div class="loading-message">
             <i class="fas fa-spinner fa-spin"></i> Loading active auctions...
         </div>
     </div>
-</div>
+</section>
+
 
 <!-- Floating Plus Icon -->
 <div class="floating-plus" id="floatbutton">
@@ -243,8 +331,10 @@
             <button id="chatbotSend"><i class="fas fa-paper-plane"></i></button>
         </div>
     </div>
+    <!-- NEW HTML STRUCTURE FOR CHATBOT BUTTON -->
     <div class="chatbot-button" id="chatbotButton">
-        <i class="fas fa-comment-dots"></i>
+        <div class="chatbot-icon"><i class="fas fa-comment-dots"></i></div>
+        <div class="chatbot-text">Chat Now</div>
     </div>
 </div>
 
@@ -258,10 +348,10 @@
                     Empowering bidders with advanced auction tools to improve bidding experience and maximize value discovery.
                 </p>
                 <div class="social-icons">
-                    <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
-                    <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
-                    <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
-                    <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                    <a aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                    <a aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+                    <a aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                    <a aria-label="Twitter"><i class="fab fa-twitter"></i></a>
                 </div>
                 <a href="#" class="back-to-top">
                     <i class="fas fa-chevron-up"></i>
@@ -329,7 +419,6 @@
 
                 // Create and append a card for each auction
                 auctions.forEach(auction => {
-                    // This div is the grid item
                     const auctionCardWrapper = document.createElement('div');
 
                     // The card itself is placed inside the grid item
