@@ -1,5 +1,5 @@
 package com.example.QuickBid.repository;
-
+import java.util.List;
 import com.example.QuickBid.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -19,6 +19,8 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     Optional<User> findByUsernameOrEmail(@Param("usernameOrEmail") String usernameOrEmail);
 
     boolean existsByUsername(String username);
+
+    List<User> findByAccountStatus(String status);
 
     boolean existsByEmail(String email);
 }

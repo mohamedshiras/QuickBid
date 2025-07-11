@@ -18,6 +18,223 @@
             font-family: 'DM Sans', sans-serif;
             background-color: #f8f9fa;
         }
+
+        /* Chatbot Styles - Modified to match your color pattern */
+        .chatbot-container {
+            position: fixed;
+            bottom: 100px; /* Adjusted to align with post auction container */
+            right: 30px;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .chatbot-button {
+
+            background-color:#004225;
+            color: white;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+            border: none;
+            outline: none;
+        }
+
+        .chatbot-button:hover {
+            background-color: #004225;
+            transform: scale(1.05);
+        }
+
+        .chatbot-button i {
+            font-size: 24px;
+        }
+
+        .chatbot-window {
+            width: 350px;
+            height: 450px;
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            display: none;
+            flex-direction: column;
+            transform: translateY(20px);
+            opacity: 0;
+            transition: all 0.3s ease;
+            border: 1px solid #e0e0e0;
+        }
+
+        .chatbot-window.active {
+            display: flex;
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .chatbot-header {
+            background-color:#004225;
+            color: white;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .chatbot-header h3 {
+            margin: 0;
+            font-size: 16px;
+            font-weight: 500;
+        }
+
+        .chatbot-close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
+            padding: 5px;
+        }
+
+        .chatbot-messages {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+            background-color: #f9f9f9;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .message {
+            margin-bottom: 5px;
+            max-width: 80%;
+            padding: 10px 15px;
+            border-radius: 18px;
+            font-size: 14px;
+            line-height: 1.4;
+            word-wrap: break-word;
+        }
+
+        .bot-message {
+            background-color: #e6e9ff;
+            color: #333;
+            border-top-left-radius: 5px;
+            align-self: flex-start;
+            border: 1px solid #d0d6ff;
+        }
+
+        .user-message {
+            background-color: #004225;
+            color: white;
+            border-top-right-radius: 5px;
+            align-self: flex-end;
+            margin-left: auto;
+        }
+
+        .chatbot-input {
+            display: flex;
+            padding: 10px;
+            border-top: 1px solid #eee;
+            background-color: white;
+        }
+
+        .chatbot-input input {
+            flex: 1;
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 25px;
+            outline: none;
+            font-size: 14px;
+            font-family: 'DM Sans', sans-serif;
+        }
+
+        .chatbot-input button {
+            background-color:#004225;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            margin-left: 10px;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: background-color 0.2s;
+        }
+
+        .chatbot-input button:hover {
+            background-color: #004225;
+        }
+
+        .quick-replies {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .quick-reply {
+            background-color: #004225;
+            color: #4a6bff;
+            border: none;
+            border-radius: 15px;
+            padding: 5px 12px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: 'DM Sans', sans-serif;
+        }
+
+        .quick-reply:hover {
+            background-color: #d0d6ff;
+        }
+        /* Chatbot Styles - Only the floating animation */
+        .chatbot-container {
+            position: fixed;
+            bottom: 100px;
+            right: 30px;
+            z-index: 1000;
+        }
+
+        .chatbot-button {
+
+            color: white;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(0px);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+            100% {
+                transform: translateY(0px);
+            }
+        }
+
+        .chatbot-button:hover {
+            animation: none;
+            transform: translateY(-5px) scale(1.05);
+        }
+
     </style>
 </head>
 <body>
@@ -29,8 +246,8 @@
             <img src="images/qbrrr.png" alt="QuickBid Logo" class="nav-logo" />
         </a>
         <div class="nav-buttons">
-            <button class="button" id="loginbutton">Log In</button>
-            <button class="button" id="signupbutton">Sign Up</button>
+            <button class="button" id="loginbutton" onclick="window.location.href='/login.html'">Log In</button>
+            <button class="button" id="signupbutton" onclick="window.location.href='/signup.html'">Sign Up</button>
         </div>
     </div>
 </nav>
@@ -119,6 +336,37 @@
     </div>
 </div>
 
+<!-- Chatbot Container -->
+<div class="chatbot-container">
+    <!-- Chat Window (hidden by default) -->
+    <div class="chatbot-window" id="chatbotWindow">
+        <div class="chatbot-header">
+            <h3>QuickBid Assistant</h3>
+            <button class="chatbot-close" id="chatbotClose">&times;</button>
+        </div>
+
+        <div class="chatbot-messages" id="chatbotMessages">
+            <div class="message bot-message">
+                Hello! I'm QuickBid Assistant. How can I help you today?
+                <div class="quick-replies">
+                    <button class="quick-reply" onclick="sendQuickReply('How do I place a bid?')">How do I place a bid?</button>
+                    <button class="quick-reply" onclick="sendQuickReply('What are the fees?')">What are the fees?</button>
+                    <button class="quick-reply" onclick="sendQuickReply('How to create an auction?')">How to create an auction?</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="chatbot-input">
+            <input type="text" id="chatbotInput" placeholder="Type your message..." />
+            <button id="chatbotSend"><i class="fas fa-paper-plane"></i></button>
+        </div>
+    </div>
+
+    <!-- Floating Chat Button (with animation) -->
+    <div class="chatbot-button" id="chatbotButton">
+        <i class="fas fa-comment-dots"></i>
+    </div>
+</div>
 <!-- Footer Section -->
 <div class="footer">
     <div class="footer-content">
@@ -163,7 +411,7 @@
 
                 <div class="contact-info" style="margin-top: 30px;">
                     <p><i class="fas fa-phone"></i> +94 (77) 500-6727</p>
-                    <p><i class="fas fa-envelope"></i> quickbid.support@gmail.com</p>
+                    <p><i class="fas fa-envelope"></i> systemquickbid@gmail.com</p>
                 </div>
             </div>
         </div>
@@ -175,12 +423,120 @@
         </div>
     </div>
 </div>
+
 <script>
     const postAuctionButton = document.getElementById('floatbutton');
     if (postAuctionButton) {
         postAuctionButton.addEventListener('click', function() {
             window.location.href = 'postauction.html';
         });
+    }
+
+    // Chatbot functionality
+    const chatbotButton = document.getElementById('chatbotButton');
+    const chatbotWindow = document.getElementById('chatbotWindow');
+    const chatbotClose = document.getElementById('chatbotClose');
+    const chatbotSend = document.getElementById('chatbotSend');
+    const chatbotInput = document.getElementById('chatbotInput');
+    const chatbotMessages = document.getElementById('chatbotMessages');
+
+    // Toggle chatbot window
+    chatbotButton.addEventListener('click', function() {
+        chatbotWindow.classList.toggle('active');
+    });
+
+    // Close chatbot window
+    chatbotClose.addEventListener('click', function() {
+        chatbotWindow.classList.remove('active');
+    });
+
+    // Send message when button is clicked
+    chatbotSend.addEventListener('click', sendMessage);
+
+    // Send message when Enter key is pressed
+    chatbotInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            sendMessage();
+        }
+    });
+
+    // Function to send a message
+    function sendMessage() {
+        const message = chatbotInput.value.trim();
+        if (message !== '') {
+            addMessage(message, 'user');
+            chatbotInput.value = '';
+
+            // Simulate bot response after a short delay
+            setTimeout(() => {
+                const botResponse = getBotResponse(message);
+                addMessage(botResponse, 'bot');
+
+                // Scroll to bottom of messages
+                chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
+            }, 500);
+        }
+    }
+
+    // Function to send a quick reply
+    function sendQuickReply(message) {
+        addMessage(message, 'user');
+
+        // Simulate bot response after a short delay
+        setTimeout(() => {
+            const botResponse = getBotResponse(message);
+            addMessage(botResponse, 'bot');
+
+            // Scroll to bottom of messages
+            chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
+        }, 500);
+    }
+
+    // Function to add a message to the chat
+    function addMessage(text, sender) {
+        const messageDiv = document.createElement('div');
+        messageDiv.classList.add('message');
+        messageDiv.classList.add(sender === 'bot' ? 'bot-message' : 'user-message');
+        messageDiv.textContent = text;
+
+        // Add quick replies for certain bot messages
+        if (sender === 'bot' && text.includes('help you')) {
+            const quickReplies = document.createElement('div');
+            quickReplies.classList.add('quick-replies');
+
+            const replies = ['How do I place a bid?', 'What are the fees?', 'How to create an auction?'];
+            replies.forEach(reply => {
+                const button = document.createElement('button');
+                button.classList.add('quick-reply');
+                button.textContent = reply;
+                button.onclick = function() {
+                    sendQuickReply(reply);
+                };
+                quickReplies.appendChild(button);
+            });
+
+            messageDiv.appendChild(quickReplies);
+        }
+
+        chatbotMessages.appendChild(messageDiv);
+        chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
+    }
+
+    // Simple bot response logic
+    function getBotResponse(userMessage) {
+        userMessage = userMessage.toLowerCase();
+
+        if (userMessage.includes('bid') || userMessage.includes('place')) {
+            return "To place a bid, first sign in to your account. Then navigate to the item you're interested in and click the 'Place Bid' button. Enter your maximum bid amount and confirm.";
+        } else if (userMessage.includes('fee') || userMessage.includes('cost')) {
+            return "Our fees are simple: Sellers pay a 5% commission on the final sale price. Buyers pay no fees. There's also a small listing fee for premium auction features.";
+        } else if (userMessage.includes('create') || userMessage.includes('auction')) {
+            return "To create an auction, click the 'Post Auction' button (the gavel icon). You'll need to provide item details, photos, starting price, and auction duration. Our team will review it before it goes live.";
+        } else if (userMessage.includes('hello') || userMessage.includes('hi')) {
+            return "Hello there! How can I assist you with QuickBid today?";
+        } else {
+            return "I'm sorry, I didn't understand that. Could you rephrase your question? I can help with bidding, fees, creating auctions, and general QuickBid information.";
+        }
     }
 </script>
 

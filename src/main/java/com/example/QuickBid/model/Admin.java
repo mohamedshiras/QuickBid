@@ -16,10 +16,10 @@ public class Admin {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int adminID;
 
-    @Column(nullable = false, unique = true, length = 50)
-    private String adminUsername;
+    @Column(name = "admin_username") // matches database column
+    private String adminUsername; // must match repository method naming
 
-    @Column(nullable = false)
+    @Column(name = "admin_password") // matches database column
     private String adminPassword;
 
     @Column(name = "createdAt", nullable = false)

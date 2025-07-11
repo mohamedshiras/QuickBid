@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Admin Login - QuickBid</title>
+    <link rel="shortcut icon" href="images/qb-admin.png" type="image/x-icon" />
+    <link rel="icon" type="image/png" href="images/qb.png" />
+    <style>
+        :root {
+
+            --admin-accent: #004225;
+        }
+
+        body {
+            background: #f5f7fa;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .login-card {
+            width: 350px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            text-align: center;
+            border-top: 4px solid var(--admin-accent);
+        }
+
+        .login-logo {
+            width: 100px;
+            margin-bottom: 20px;
+        }
+
+        .login-form input {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 14px;
+        }
+
+        .login-form button {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--admin-accent);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: background-color 0.3s;
+        }
+        .signup-text {
+            margin-top: 20px;
+            color: #666;
+            font-size: 14px;
+        }
+
+        .signup-text a {
+            color: var(--admin-accent);
+            text-decoration: none;
+        }
+
+        .error-message {
+            color: #e74c3c;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+
+        .success-message {
+            color: #2ecc71;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+
+        .admin-label {
+            color: var(--admin-accent);
+            font-weight: 600;
+            margin-bottom: 5px;
+            display: block;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+
+<div class="login-card">
+    <img src="images/qbrrr.png" alt="QuickBid Admin" class="login-logo" />
+
+    <form class="login-form" id="adminLoginForm" method="POST">
+        <label class="admin-label">Admin Username</label>
+        <input type="text" name="username" placeholder="Enter admin username" required />
+
+        <label class="admin-label">Password</label>
+        <input type="password" name="password" placeholder="Enter admin password" required />
+
+        <button class="button" type="submit">Login</button>
+    </form>
+
+    <div id="message"></div>
+
+    <p class="signup-text">Regular user? <a href="login.html">User login</a></p>
+</div>
+
+<script>
+    document.getElementById('adminLoginForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const formData = new FormData(this);
+        const messageDiv = document.getElementById('message');
+        messageDiv.innerHTML = ''; // Clear previous messages
+
+        fetch('/admin/login', {
+            method: 'POST',
+            body: new URLSearchParams(formData), // Send as form-urlencoded
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            }
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    messageDiv.innerHTML = '<div class="success-message">' + data.message + '</div>';
+                    setTimeout(() => {
+                        window.location.href = '/admin/dashboard';
+                    }, 1000);
+                } else {
+                    messageDiv.innerHTML = '<div class="error-message">' + data.message + '</div>';
+                }
+            })
+            .catch(error => {
+                messageDiv.innerHTML = '<div class="error-message">Login failed. Please try again.</div>';
+                console.error('Error:', error);
+            });
+    });
+</script>
+
+</body>
+</html>

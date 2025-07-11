@@ -7,10 +7,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
 @RestController
+@RequestMapping("/api/auth")
 public class AuthController {
 
     @Autowired
@@ -25,125 +27,87 @@ public class AuthController {
         Map<String, Object> response = new HashMap<>();
 
         try {
-            AuthService.LoginResult result = authService.authenticateUser(usernameOrEmail, password);
+            User authenticatedUser = authService.authenticateUser(usernameOrEmail, password).getUser();
 
-            if (result.isSuccess()) {
-                // Store user/admin information in session
-                if ("USER".equals(result.getUserType())) {
-                    session.setAttribute("userId", result.getUser().getUserId());
-                    session.setAttribute("username", result.getUser().getUsername());
-                    session.setAttribute("userType", "USER");
-                    session.setAttribute("fullname", result.getUser().getFullname());
-                } else if ("ADMIN".equals(result.getUserType())) {
-                    session.setAttribute("adminId", result.getAdmin().getAdminID());
-                    session.setAttribute("username", result.getAdmin().getAdminUsername());
-                    session.setAttribute("userType", "ADMIN");
-                }
+            if (authenticatedUser != null) {
+                // Store user information in session
+                session.setAttribute("userId", authenticatedUser.getUserId());
+                session.setAttribute("username", authenticatedUser.getUsername());
+                session.setAttribute("fullname", authenticatedUser.getFullname());
+                session.setAttribute("userType", "USER");
 
                 response.put("success", true);
-                response.put("message", result.getMessage());
-                response.put("userType", result.getUserType());
-
+                response.put("message", "Login successful");
+                response.put("userId", authenticatedUser.getUserId());
+                response.put("username", authenticatedUser.getUsername());
+                response.put("fullname", authenticatedUser.getFullname());
                 return ResponseEntity.ok(response);
             } else {
                 response.put("success", false);
-                response.put("message", result.getMessage());
-
+                response.put("message", "Invalid username or password");
                 return ResponseEntity.badRequest().body(response);
             }
 
         } catch (Exception e) {
             response.put("success", false);
             response.put("message", "Login failed: " + e.getMessage());
-
-            return ResponseEntity.internalServerError().body(response);
+            return ResponseEntity.badRequest().body(response);
         }
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<Map<String, Object>> signup(
+    public ResponseEntity<Map<String, Object>> register(
             @RequestParam("fullname") String fullname,
             @RequestParam("address") String address,
-            @RequestParam("number") String contact,  // Note: form uses "number" field name
+            @RequestParam("contact") String contact,
             @RequestParam("username") String username,
             @RequestParam("email") String email,
             @RequestParam("password") String password,
-            @RequestParam("confirm-password") String confirmPassword) {
+            @RequestParam("confirmPassword") String confirmPassword) {
 
         Map<String, Object> response = new HashMap<>();
 
         try {
             // Validate input fields
-            if (fullname == null || fullname.trim().isEmpty()) {
-                response.put("success", false);
-                response.put("message", "Full name is required!");
-                return ResponseEntity.badRequest().body(response);
-            }
+            String[] fields = { fullname, address, contact, username, email, password, confirmPassword };
+            boolean hasEmptyField = Arrays.stream(fields)
+                    .anyMatch(field -> field == null || field.trim().isEmpty());
 
-            if (address == null || address.trim().isEmpty()) {
+            if (hasEmptyField) {
                 response.put("success", false);
-                response.put("message", "Address is required!");
-                return ResponseEntity.badRequest().body(response);
-            }
-
-            if (contact == null || contact.trim().isEmpty()) {
-                response.put("success", false);
-                response.put("message", "Contact number is required!");
+                response.put("message", "All fields are required");
                 return ResponseEntity.badRequest().body(response);
             }
 
             // Validate contact number format (10 digits)
             if (!contact.matches("^[0-9]{10}$")) {
                 response.put("success", false);
-                response.put("message", "Contact number must be exactly 10 digits!");
-                return ResponseEntity.badRequest().body(response);
-            }
-
-            if (username == null || username.trim().isEmpty()) {
-                response.put("success", false);
-                response.put("message", "Username is required!");
-                return ResponseEntity.badRequest().body(response);
-            }
-
-            if (email == null || email.trim().isEmpty()) {
-                response.put("success", false);
-                response.put("message", "Email is required!");
+                response.put("message", "Contact number must be exactly 10 digits");
                 return ResponseEntity.badRequest().body(response);
             }
 
             // Validate email format
             if (!email.matches("^[A-Za-z0-9+_.-]+@(.+)$")) {
                 response.put("success", false);
-                response.put("message", "Please enter a valid email address!");
-                return ResponseEntity.badRequest().body(response);
-            }
-
-            if (password == null || password.trim().isEmpty()) {
-                response.put("success", false);
-                response.put("message", "Password is required!");
-                return ResponseEntity.badRequest().body(response);
-            }
-
-            if (confirmPassword == null || confirmPassword.trim().isEmpty()) {
-                response.put("success", false);
-                response.put("message", "Please confirm your password!");
+                response.put("message", "Please enter a valid email address");
                 return ResponseEntity.badRequest().body(response);
             }
 
             // Check if passwords match
             if (!password.equals(confirmPassword)) {
                 response.put("success", false);
-                response.put("message", "Passwords do not match!");
+                response.put("message", "Passwords do not match");
                 return ResponseEntity.badRequest().body(response);
             }
 
-            // Validate password strength (minimum 4 characters for simplicity)
-            if (password.length() < 4) {
+            // Validate password strength
+            if (password.length() < 6) {
                 response.put("success", false);
-                response.put("message", "Password must be at least 4 characters long!");
+                response.put("message", "Password must be at least 6 characters long");
                 return ResponseEntity.badRequest().body(response);
             }
 
+            // Register user
             User newUser = authService.registerUser(
                     fullname.trim(),
                     address.trim(),
@@ -151,19 +115,18 @@ public class AuthController {
                     username.trim(),
                     email.trim().toLowerCase(),
                     password
-                    // REMOVED: whoApproved
             );
 
             response.put("success", true);
-            response.put("message", "Registration successful! You can now login with your credentials.");
+            response.put("message", "Registration successful");
             response.put("userId", newUser.getUserId());
+            response.put("username", newUser.getUsername());
 
             return ResponseEntity.ok(response);
 
         } catch (Exception e) {
             response.put("success", false);
             response.put("message", e.getMessage());
-
             return ResponseEntity.badRequest().body(response);
         }
     }
@@ -174,16 +137,12 @@ public class AuthController {
 
         try {
             session.invalidate();
-
             response.put("success", true);
-            response.put("message", "Logout successful!");
-
+            response.put("message", "Logout successful");
             return ResponseEntity.ok(response);
-
         } catch (Exception e) {
             response.put("success", false);
             response.put("message", "Logout failed: " + e.getMessage());
-
             return ResponseEntity.internalServerError().body(response);
         }
     }
@@ -193,19 +152,11 @@ public class AuthController {
         Map<String, Object> response = new HashMap<>();
 
         String userType = (String) session.getAttribute("userType");
-        String username = (String) session.getAttribute("username");
-
-        if (userType != null && username != null) {
+        if (userType != null && userType.equals("USER")) {
             response.put("loggedIn", true);
-            response.put("userType", userType);
-            response.put("username", username);
-
-            if ("USER".equals(userType)) {
-                response.put("userId", session.getAttribute("userId"));
-                response.put("fullname", session.getAttribute("fullname"));
-            } else if ("ADMIN".equals(userType)) {
-                response.put("adminId", session.getAttribute("adminId"));
-            }
+            response.put("userId", session.getAttribute("userId"));
+            response.put("username", session.getAttribute("username"));
+            response.put("fullname", session.getAttribute("fullname"));
         } else {
             response.put("loggedIn", false);
         }

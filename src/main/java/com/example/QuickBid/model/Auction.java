@@ -33,7 +33,7 @@ public class Auction {
     private LocalDateTime endedDateAndTime;
 
     @Column(nullable = false)
-    private String auctionStatus = "pending confirmation";
+    private String auctionStatus = "pending";
 
     @Column(nullable = false, length = 25)
     private String category;
