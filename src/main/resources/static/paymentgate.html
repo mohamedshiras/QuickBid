@@ -482,6 +482,7 @@
             const taxRate = 0.10; // 10% tax
             const taxAmount = bidAmount * taxRate;
             const totalAmount = bidAmount + shippingFee + taxAmount;
+            const displayAmount = totalAmount * 100;
 
             // Update UI with auction data
             document.getElementById('itemImage').src = auctionData.imageUrls[0] || 'images/placeholder.png';
@@ -490,7 +491,7 @@
             document.getElementById('itemSubtotal').textContent = `Rs.${bidAmount.toLocaleString('en-IN')}`;
             document.getElementById('shippingFee').textContent = `Rs.${shippingFee.toLocaleString('en-IN')}`;
             document.getElementById('taxAmount').textContent = `Rs.${taxAmount.toLocaleString('en-IN', {minimumFractionDigits: 2})}`;
-            document.getElementById('totalAmount').textContent = `Rs.${totalAmount.toLocaleString('en-IN', {minimumFractionDigits: 2})}`;
+            document.getElementById('totalAmount').textContent = `Rs.${displayAmount.toLocaleString('en-IN', {minimumFractionDigits: 2})}`;
 
         } catch (error) {
             console.error('Error loading auction details:', error);
