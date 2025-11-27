@@ -93,6 +93,7 @@
             font-size: 12px;
             color: #666;
             margin-bottom: 15px;
+            text-transform: capitalize;
         }
 
         .auction-description {
@@ -201,20 +202,20 @@
             transition: all 0.3s ease;
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            border: solid 2px;
+            border: solid 2px #004225;
         }
 
         .bid-button:hover {
-            transform: translateZ(-2px);
+            transform: translateY(-2px);
             background: white;
             color: black;
-            border: solid 2px;
         }
 
         .bid-button:disabled {
             background-color: #ccc;
             cursor: not-allowed;
             transform: none;
+            border-color: #ccc;
         }
 
         .bid-increment {
@@ -225,12 +226,13 @@
         }
 
         /* Bid History */
-        .bid-history {
-            margin-top: 40px;
+        .bid-history-card {
+            grid-column: 1 / -1;
             background-color: #fff;
             border-radius: 12px;
             padding: 30px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            margin-top: -10px;
         }
 
         .section-title {
@@ -249,6 +251,8 @@
 
         .bid-list {
             list-style: none;
+            max-height: 400px;
+            overflow-y: auto;
         }
 
         .bid-item {
@@ -256,6 +260,10 @@
             justify-content: space-between;
             padding: 12px 0;
             border-bottom: 1px solid #eee;
+        }
+
+        .bid-item.new-bid {
+            background-color: #e8f5e9;
         }
 
         .bid-item:last-child {
@@ -328,15 +336,6 @@
             font-size: 18px;
         }
 
-        .seller-rating {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            color: #ffc107;
-            font-size: 14px;
-            margin-top: 5px;
-        }
-
         .seller-meta {
             display: flex;
             gap: 15px;
@@ -355,262 +354,8 @@
             color: #004225;
         }
 
-        .contact-seller {
-            margin-top: 20px;
-        }
-
-        .contact-button {
-            width: 100%;
-            padding: 10px;
-            background-color: transparent;
-            border: 2px solid #004225;
-            color: #004225;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .contact-button:hover {
-            background-color: #004225;
-            color: white;
-        }
-
-        /* Footer */
-        .footer {
-            background: linear-gradient(135deg, #1a4d3a 0%, #0d2d20 100%);
-            color: white;
-            padding: 60px 40px 0;
-            margin-top: 40px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .footer::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-image:
-                    linear-gradient(45deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-                    linear-gradient(-45deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-            background-size: 60px 60px;
-            pointer-events: none;
-        }
-
-        .footer::after {
-            content: '';
-            position: absolute;
-            top: 20%;
-            right: -10%;
-            width: 300px;
-            height: 300px;
-            background: rgba(255, 251, 0, 0.05);
-            border-radius: 50%;
-            filter: blur(100px);
-        }
-
-        .footer-content {
-            position: relative;
-            z-index: 2;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .footer-main {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 60px;
-            margin-bottom: 40px;
-        }
-
-        .footer-brand .brand-description {
-            font-size: 16px;
-            line-height: 1.6;
-            color: rgba(255, 255, 255, 0.8);
-            margin-bottom: 30px;
-        }
-
-        .social-icons {
-            display: flex;
-            gap: 15px;
-        }
-
-        .social-icons a {
-            width: 40px;
-            height: 40px;
-            background: rgba(255, 255, 255, 0.1);
-            color: white;
-            font-size: 18px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 8px;
-            transition: all 0.3s ease;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .social-icons a:hover {
-            background: #fffb00;
-            color: #1a4d3a;
-            transform: translateZ(-2px);
-            cursor: pointer;
-        }
-
-        .footer-column h3 {
-            font-size: 18px;
-            font-weight: 600;
-            margin-bottom: 20px;
-            color: #fffb00;
-        }
-
-        .footer-column ul {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-
-        .footer-column ul li {
-            margin-bottom: 12px;
-        }
-
-        .footer-column ul li a {
-            text-decoration: none;
-            color: rgba(255, 255, 255, 0.8);
-            font-size: 15px;
-            transition: all 0.3s ease;
-            position: relative;
-        }
-
-        .footer-column ul li a:hover {
-            color: #fffb00;
-            padding-left: 8px;
-        }
-
-        .footer-column ul li a::before {
-            content: '';
-            position: absolute;
-            left: -8px;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 0;
-            height: 2px;
-            background: #fffb00;
-            transition: width 0.3s ease;
-        }
-
-        .footer-column ul li a:hover::before {
-            width: 4px;
-        }
-
-        .contact-info p {
-            margin-bottom: 12px;
-            color: rgba(255, 255, 255, 0.8);
-            font-size: 15px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .contact-info i {
-            color: #fffb00;
-            width: 16px;
-        }
-
-        .back-to-top {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 12px 20px;
-            background: rgba(255, 255, 255, 0.1);
-            color: white;
-            text-decoration: none;
-            border-radius: 8px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            transition: all 0.3s ease;
-            font-size: 14px;
-            font-weight: bold;
-            margin-top: 20px;
-        }
-
-        .back-to-top:hover {
-            background: rgba(255, 255, 255, 0.2);
-            transform: translateY(-2px);
-            color: #1a4d3a;
-            background: #fffb00;
-            font-weight: bold;
-        }
-
-        .footer-bottom {
-            background: #fffb00;
-            color: #1a4d3a;
-            padding: 15px 0;
-            text-align: center;
-            font-size: 14px;
-            font-weight: 500;
-            margin: 0 -40px;
-        }
-
-        /* Responsive */
         @media (max-width: 992px) {
             .auction-container {
-                grid-template-columns: 1fr;
-            }
-
-            .auction-images {
-                grid-template-columns: 60px 1fr;
-            }
-
-            .thumbnail {
-                width: 60px;
-                height: 60px;
-            }
-
-            .main-image {
-                height: 400px;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .auction-meta {
-                flex-direction: column;
-                gap: 15px;
-            }
-
-            .bid-history, .seller-info {
-                padding: 20px;
-            }
-
-            .footer-main {
-                grid-template-columns: 1fr 1fr;
-            }
-        }
-
-        @media (max-width: 576px) {
-            .auction-images {
-                grid-template-columns: 1fr;
-                grid-template-rows: auto auto;
-            }
-
-            .thumbnail-container {
-                flex-direction: row;
-                order: 2;
-                overflow-x: auto;
-                padding-bottom: 10px;
-            }
-
-            .thumbnail {
-                min-width: 60px;
-            }
-
-            .main-image {
-                height: 300px;
-                order: 1;
-            }
-
-            .footer-main {
                 grid-template-columns: 1fr;
             }
         }
@@ -625,258 +370,285 @@
             <img src="images/qbrrr.png" alt="QuickBid Logo" class="nav-logo" />
         </a>
         <div class="nav-buttons">
-            <button class="button" id="loginbutton">Log In</button>
-            <button class="button" id="signupbutton">Sign Up</button>
+            <button class="button" id="loginbutton" onclick="window.location.href='/login.html'">Log In</button>
+            <button class="button" id="signupbutton" onclick="window.location.href='/signup.html'">Sign Up</button>
+            <button class="button" id="logoutButton" style="display: none;">Log Out</button>
+            <div class="profile-wrapper" id="profileWrapper" style="display: none;"
+                 onclick="window.location.href='manageaccount.html'" style="cursor: pointer;">
+                <img src="images/default-profile.png" alt="Profile" class="profile-pic" id="profilePic"
+                     onerror="this.onerror=null; this.src='https://st3.depositphotos.com/6672868/13701/v/450/depositphotos_137014128-stock-illustration-user-profile-icon.jpg';">
+            </div>
         </div>
     </div>
 </nav>
 
 <!-- Main Content -->
-<div class="auction-container">
-    <!-- Auction Images -->
-    <div class="auction-images">
-        <div class="thumbnail-container">
-            <img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500&h=500&fit=crop" alt="Vintage Watch 1" class="thumbnail active" />
-            <img src="https://images.unsplash.com/photo-1434056886845-dac89ffe9b56?w=500&h=500&fit=crop" alt="Vintage Watch 2" class="thumbnail" />
-            <img src="https://images.unsplash.com/photo-1542496658-e33a6d0d50f6?w=500&h=500&fit=crop" alt="Vintage Watch 3" class="thumbnail" />
-            <img src="https://images.unsplash.com/photo-1519766304817-4f37bda74a26?w=500&h=500&fit=crop" alt="Vintage Watch 4" class="thumbnail" />
-        </div>
-        <img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500&h=500&fit=crop" alt="Vintage Watch Collection" class="main-image" />
-    </div>
-
-    <!-- Auction Details -->
-    <div class="auction-details">
-        <h1 class="auction-title">Vintage Watch Collection</h1>
-        <span class="auction-category">Collectibles & Antiques</span>
-
-        <p class="auction-description">
-            This exquisite collection features three rare vintage timepieces from the 1960s era, each in excellent working condition.
-            The collection includes a Rolex Oyster Perpetual, an Omega Seamaster, and a Jaeger-LeCoultre Memovox. All watches have
-            been professionally serviced and come with their original boxes and documentation.
-        </p>
-
-        <div class="auction-meta">
-            <div class="meta-item">
-                <i class="fas fa-eye"></i>
-                <span>1,245 views</span>
-            </div>
-            <div class="meta-item">
-                <i class="fas fa-gavel"></i>
-                <span>24 bids</span>
-            </div>
-            <div class="meta-item">
-                <i class="fas fa-heart"></i>
-                <span>87 watchers</span>
-            </div>
-        </div>
-
-        <!-- Bidding Section -->
-        <div class="bidding-section">
-            <div class="current-bid">
-                <span class="bid-label">Current Bid</span>
-                <span class="bid-amount">Rs.24,500.00</span>
-            </div>
-
-            <div class="bid-time">
-                <p>Auction ends in <span class="time-remaining">2d 14h 32m</span></p>
-            </div>
-
-            <form class="bid-form">
-                <div class="bid-input-group">
-                    <span class="currency-symbol">Rs.</span>
-                    <input type="number" class="bid-input" placeholder="Enter your bid amount" min="24500" step="500" style="padding-left: 30px;" />
-                </div>
-                <span class="bid-increment">Next minimum bid: Rs.25,000.00</span>
-                <button type="submit" class="bid-button">Place Bid</button>
-            </form>
-        </div>
-    </div>
-
-    <!-- Bid History -->
-    <div class="bid-history">
-        <h2 class="section-title">
-            <i class="fas fa-history"></i>
-            Bid History
-        </h2>
-        <ul class="bid-list">
-            <li class="bid-item">
-                <div class="bidder-info">
-                    <div class="bidder-avatar">JD</div>
-                    <div>
-                        <div class="bidder-name">JohnDoe</div>
-                        <div class="bid-time-history">Today, 14:32</div>
-                    </div>
-                </div>
-                <div class="bid-amount-history">Rs.24,500.00</div>
-            </li>
-            <li class="bid-item">
-                <div class="bidder-info">
-                    <div class="bidder-avatar">AS</div>
-                    <div>
-                        <div class="bidder-name">AntiqueShop</div>
-                        <div class="bid-time-history">Today, 13:45</div>
-                    </div>
-                </div>
-                <div class="bid-amount-history">Rs.24,000.00</div>
-            </li>
-            <li class="bid-item">
-                <div class="bidder-info">
-                    <div class="bidder-avatar">CW</div>
-                    <div>
-                        <div class="bidder-name">CollectorW</div>
-                        <div class="bid-time-history">Today, 11:20</div>
-                    </div>
-                </div>
-                <div class="bid-amount-history">Rs.23,500.00</div>
-            </li>
-            <li class="bid-item">
-                <div class="bidder-info">
-                    <div class="bidder-avatar">TM</div>
-                    <div>
-                        <div class="bidder-name">TimeMaster</div>
-                        <div class="bid-time-history">Yesterday, 18:05</div>
-                    </div>
-                </div>
-                <div class="bid-amount-history">Rs.23,000.00</div>
-            </li>
-        </ul>
-    </div>
-
-    <!-- Seller Information -->
-    <div class="seller-info">
-        <div class="seller-header">
-            <div class="seller-avatar">TW</div>
-            <div>
-                <div class="seller-name">TimeWatches</div>
-                <div class="seller-rating">
-                    <i class="fas fa-star"></i>
-                    <i class="fas fa-star"></i>
-                    <i class="fas fa-star"></i>
-                    <i class="fas fa-star"></i>
-                    <i class="fas fa-star-half-alt"></i>
-                    <span>(128 reviews)</span>
-                </div>
-            </div>
-        </div>
-
-        <div class="seller-meta">
-            <div class="seller-meta-item">
-                <i class="fas fa-map-marker-alt"></i>
-                <span>Colombo, Sri Lanka</span>
-            </div>
-            <div class="seller-meta-item">
-                <i class="fas fa-user-clock"></i>
-                <span>Member since 2018</span>
-            </div>
-        </div>
-
-        <div class="contact-seller">
-            <button class="contact-button">
-                <i class="fas fa-envelope"></i> Contact Seller
-            </button>
-        </div>
-    </div>
-</div>
-
-<!-- Footer Section -->
-<div class="footer">
-    <div class="footer-content">
-        <div class="footer-main">
-            <div class="footer-brand">
-                <img src="images/qby.png" alt="QuickBid Logo" class="nav-logo" />
-                <p class="brand-description">
-                    Empowering bidders with advanced auction tools to improve bidding experience and maximize value discovery.
-                </p>
-                <div class="social-icons">
-                    <a aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
-                    <a aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
-                    <a aria-label="Instagram"><i class="fab fa-instagram"></i></a>
-                    <a aria-label="Twitter"><i class="fab fa-twitter"></i></a>
-                </div>
-                <a href="#" class="back-to-top">
-                    <i class="fas fa-chevron-up"></i>
-                    BACK TO TOP
-                </a>
-            </div>
-
-            <div class="footer-column">
-                <h3>Site Map</h3>
-                <ul>
-                    <li><a href="#">Homepage</a></li>
-                    <li><a href="#">Technology</a></li>
-                    <li><a href="#">QuickBid Marketplace</a></li>
-                    <li><a href="#">Resources & News</a></li>
-                    <li><a href="#">Careers</a></li>
-                    <li><a href="contact.html">Contact Us</a></li>
-                    <li><a href="#">Portal</a></li>
-                </ul>
-            </div>
-
-            <div class="footer-column">
-                <h3>Legal</h3>
-                <ul>
-                    <li><a href="#">Privacy Policy</a></li>
-                    <li><a href="#">Terms of Services</a></li>
-                    <li><a href="#">Bidder's Corner</a></li>
-                </ul>
-
-                <div class="contact-info" style="margin-top: 30px;">
-                    <p><i class="fas fa-phone"></i> +94 (77) 500-6727</p>
-                    <p><i class="fas fa-envelope"></i> quickbid.support@gmail.com</p>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="footer-bottom">
-        <div class="copyright">
-            Copyright © 2025, quickbid.ai. All Rights Reserved.
-        </div>
+<div class="auction-container" id="auctionContainer">
+    <div class="loading-message" style="grid-column: 1 / -1; text-align: center; padding: 50px;">
+        <i class="fas fa-spinner fa-spin fa-2x"></i>
+        <p>Loading Auction Details...</p>
     </div>
 </div>
 
 <script>
-    // Thumbnail click functionality
-    document.querySelectorAll('.thumbnail').forEach(thumb => {
-        thumb.addEventListener('click', function() {
-            // Remove active class from all thumbnails
-            document.querySelectorAll('.thumbnail').forEach(t => t.classList.remove('active'));
+    let countdownInterval;
+    let currentAuctionId = null;
+    let isLoggedIn = false;
 
-            // Add active class to clicked thumbnail
-            this.classList.add('active');
+    async function checkLoginStatus() {
+        try {
+            const response = await fetch('/api/session/user');
+            const data = await response.json();
+            const loginButton = document.getElementById('loginbutton');
+            const signupButton = document.getElementById('signupbutton');
+            const logoutButton = document.getElementById('logoutButton');
+            const profileWrapper = document.getElementById('profileWrapper');
+            const profilePic = document.getElementById('profilePic');
 
-            // Update main image
-            const mainImage = document.querySelector('.main-image');
-            mainImage.src = this.src;
-            mainImage.alt = this.alt;
+            if (data.loggedIn) {
+                loginButton.style.display = 'none';
+                signupButton.style.display = 'none';
+                logoutButton.style.display = 'inline-block';
+                profileWrapper.style.display = 'inline-block';
+
+                if (data.profilePicUrl) {
+                    profilePic.src = data.profilePicUrl;
+                } else {
+                    profilePic.src = 'https://st3.depositphotos.com/6672868/13701/v/450/depositphotos_137014128-stock-illustration-user-profile-icon.jpg';
+                }
+                return true;
+            } else {
+                loginButton.style.display = 'inline-block';
+                signupButton.style.display = 'inline-block';
+                logoutButton.style.display = 'none';
+                profileWrapper.style.display = 'none';
+                return false;
+            }
+        } catch (error) {
+            console.error('Error checking login status:', error);
+            return false;
+        }
+    }
+
+    async function logout() {
+        try {
+            await fetch('/api/auth/logout', { method: 'POST' });
+            window.location.href = '/index.html';
+        } catch (error) {
+            console.error('Logout failed:', error);
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', async function () {
+        isLoggedIn = await checkLoginStatus();
+        document.getElementById('logoutButton').addEventListener('click', logout);
+
+        const params = new URLSearchParams(window.location.search);
+        currentAuctionId = params.get('id');
+        const container = document.getElementById('auctionContainer');
+
+        if (!currentAuctionId) {
+            container.innerHTML = `<div class="error-message">Auction ID not found. Please go back to the <a href="/index.html">homepage</a>.</div>`;
+            return;
+        }
+
+        fetchAuctionDetails(currentAuctionId);
+
+        // Add Pay Now click handler here
+        document.addEventListener('click', function (e) {
+            if (e.target && e.target.id === 'payButton') {
+                window.location.href = `/paymentgate.html?auctionId=${currentAuctionId}`;
+            }
         });
     });
 
-    // Bid form validation
-    const bidForm = document.querySelector('.bid-form');
-    if (bidForm) {
-        bidForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            const bidInput = this.querySelector('.bid-input');
-            const minBid = parseInt(bidInput.min);
-            const bidAmount = parseInt(bidInput.value);
+    async function fetchAuctionDetails(auctionId) {
+        const container = document.getElementById('auctionContainer');
+        try {
+            const response = await fetch(`/api/auctions/${auctionId}`);
+            if (!response.ok) throw new Error('Auction not found');
+            const data = await response.json();
+            populateAuctionDetails(data);
+        } catch (error) {
+            console.error('Failed to fetch auction details:', error);
+            container.innerHTML = `<div class="error-message">Could not load auction details.</div>`;
+        }
+    }
 
-            if (isNaN(bidAmount) {
-                alert('Please enter a valid bid amount');
-                return;
-            }
+    function populateAuctionDetails(data) {
+        const container = document.getElementById('auctionContainer');
+        if (!container.innerHTML.includes('bid-history-card')) {
+            container.innerHTML = '';
 
-            if (bidAmount < minBid) {
-                alert(`Your bid must be at least Rs.${minBid.toLocaleString()}`);
-                return;
-            }
+            let thumbnailsHTML = data.imageUrls.map((url, index) =>
+                `<img src="${url}" alt="${data.title} image ${index + 1}" class="thumbnail ${index === 0 ? 'active' : ''}" />`
+            ).join('');
 
-            // Here you would typically send the bid to your server
-            alert(`Bid of Rs.${bidAmount.toLocaleString()} placed successfully!`);
+            container.innerHTML = `
+            <div class="auction-images">
+                <div class="thumbnail-container">${thumbnailsHTML}</div>
+                <img src="${data.imageUrls[0] || 'images/placeholder.png'}" alt="${data.title}" class="main-image" />
+            </div>
+            <div class="auction-details">
+                <h1 class="auction-title">${data.title}</h1>
+                <span class="auction-category">${data.category}</span>
+                <p class="auction-description">${data.description}</p>
+                <div class="auction-meta">
+                    <div class="meta-item"><i class="fas fa-tag"></i><span>Condition: ${data.condition}</span></div>
+                </div>
+                <div class="bidding-section">
+                    <div class="current-bid">
+                        <span class="bid-label">Current Bid</span>
+                        <span class="bid-amount"></span>
+                    </div>
+                    <div class="bid-time"><p>Auction ends in <span class="time-remaining">--</span></p></div>
+                    <form class="bid-form" id="bidForm">
+                        <div class="bid-input-group">
+                            <input type="number" class="bid-input" placeholder="Enter your bid" required />
+                        </div>
+                        <button type="submit" class="bid-button">Place Bid</button>
+                    </form>
+                    <button id="payButton" class="bid-button" style="display: none; margin-top: 20px;">Pay Now</button>
+                </div>
+            </div>
+            <div class="bid-history-card">
+                <h2 class="section-title"><i class="fas fa-history"></i> Bid History</h2>
+                <ul class="bid-list"></ul>
+            </div>
+        `;
+            addThumbnailListeners();
+            addBidFormListener();
+        }
 
-            // Reset form
-            bidInput.value = '';
+        updateBidInfo(data);
+        startCountdown(data.auctionDeadline);
+    }
+
+    function updateBidInfo(data) {
+        const bidList = document.querySelector('.bid-list');
+        const currentBidAmountEl = document.querySelector('.bid-amount');
+        const bidInput = document.querySelector('.bid-input');
+
+        currentBidAmountEl.textContent = `Rs.${parseFloat(data.currentBid).toLocaleString()}`;
+
+        const nextMinBid = data.bids.length > 0 ? parseFloat(data.currentBid) + 1 : parseFloat(data.startingPrice);
+        bidInput.min = nextMinBid;
+        bidInput.placeholder = `Enter bid (min Rs.${nextMinBid.toLocaleString()})`;
+
+        let bidsHTML = '<p>No bids yet. Be the first!</p>';
+        if (data.bids && data.bids.length > 0) {
+            bidsHTML = data.bids.map((bid, index) => `
+            <li class="bid-item ${index === 0 ? 'new-bid' : ''}">
+                <div class="bidder-info">
+                    <div class="bidder-avatar">${bid.bidderAvatarInitial}</div>
+                    <div>
+                        <div class="bidder-name">${bid.bidderName}</div>
+                        <div class="bid-time-history">${formatTimeAgo(bid.bidDate)}</div>
+                    </div>
+                </div>
+                <div class="bid-amount-history">Rs.${parseFloat(bid.bidAmount).toLocaleString()}</div>
+            </li>
+        `).join('');
+        }
+        bidList.innerHTML = bidsHTML;
+
+        if (!isLoggedIn) {
+            bidInput.disabled = true;
+            document.querySelector('.bid-button').disabled = true;
+            bidInput.placeholder = "Please log in to place a bid";
+        }
+    }
+
+    function addThumbnailListeners() {
+        document.querySelectorAll('.thumbnail').forEach(thumb => {
+            thumb.addEventListener('click', function () {
+                document.querySelectorAll('.thumbnail').forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+                document.querySelector('.main-image').src = this.src;
+            });
         });
+    }
+
+    function addBidFormListener() {
+        const bidForm = document.getElementById('bidForm');
+        if (bidForm) {
+            bidForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const bidInput = e.target.querySelector('.bid-input');
+                const bidButton = e.target.querySelector('.bid-button');
+                const amount = bidInput.value;
+
+                bidButton.disabled = true;
+                bidButton.textContent = 'Placing Bid...';
+
+                try {
+                    const response = await fetch(`/api/auctions/${currentAuctionId}/bids`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ amount: amount })
+                    });
+                    const result = await response.json();
+                    if (!result.success) throw new Error(result.message);
+
+                    const updatedResponse = await fetch(`/api/auctions/${currentAuctionId}`);
+                    const updatedData = await updatedResponse.json();
+                    updateBidInfo(updatedData);
+                    bidInput.value = '';
+
+                } catch (error) {
+                    alert(`Error placing bid: ${error.message}`);
+                } finally {
+                    bidButton.disabled = false;
+                    bidButton.textContent = 'Place Bid';
+                }
+            });
+        }
+    }
+
+    function startCountdown(deadline) {
+        const countdownElement = document.querySelector('.time-remaining');
+        const bidButton = document.querySelector('.bid-button');
+        const payButton = document.getElementById('payButton');
+        if (!countdownElement || !deadline) return;
+
+        clearInterval(countdownInterval);
+
+        countdownInterval = setInterval(() => {
+            const now = new Date().getTime();
+            const distance = new Date(deadline).getTime() - now;
+
+            if (distance < 0) {
+                clearInterval(countdownInterval);
+                countdownElement.textContent = "Auction Ended";
+                countdownElement.style.color = "#555";
+                if (bidButton) bidButton.disabled = true;
+
+                // Show the Pay button after deadline
+                if (payButton) payButton.style.display = 'inline-block';
+                return;
+            }
+
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            countdownElement.textContent = `${days}d ${hours}h ${minutes}m ${seconds}s`;
+        }, 1000);
+    }
+
+    function formatTimeAgo(dateStr) {
+        const date = new Date(dateStr);
+        const now = new Date();
+        const seconds = Math.round((now - date) / 1000);
+        const minutes = Math.round(seconds / 60);
+        const hours = Math.round(minutes / 60);
+        const days = Math.round(hours / 24);
+
+        if (seconds < 60) return `a few seconds ago`;
+        if (minutes < 60) return `${minutes} minutes ago`;
+        if (hours < 24) return `${hours} hours ago`;
+        return `${days} days ago`;
     }
 </script>
 

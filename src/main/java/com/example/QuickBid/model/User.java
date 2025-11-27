@@ -4,16 +4,19 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Setter
 @Getter
 @NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "users")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int userId;
+    private Integer userId;
 
     @Column(nullable = false, length = 50)
     private String fullname;
@@ -33,22 +36,17 @@ public class User {
     @Column(nullable = false)
     private String password;
 
+    @Column(nullable = false)
+    private String accountStatus = "pending";
+
     @Column(name = "createdAt")
     private LocalDateTime createdAt;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "whoApproved", nullable = false)
-    private Admin admin;
+    @Lob
+    @Column(name = "profile_picture", columnDefinition="LONGBLOB", nullable = true)
+    private byte[] profilePicture;
 
-    public User(int userId, String fullname, String address, String contact, String username, String email, String password, LocalDateTime createdAt, Admin admin) {
-        this.userId = userId;
-        this.fullname = fullname;
-        this.address = address;
-        this.contact = contact;
-        this.username = username;
-        this.email = email;
-        this.password = password;
-        this.createdAt = createdAt;
-        this.admin = admin;
-    }
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "whoApproved", nullable = true)
+    private Admin admin;
 }
