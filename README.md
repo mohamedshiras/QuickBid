@@ -53,20 +53,19 @@ Built with a scalable backend architecture and a user–friendly frontend interf
 
 QuickBid/
 ├── src/
-│ ├── main/java/…
-│ │ ├── controller/ # REST & Web controllers
-│ │ ├── service/ # Business logic
-│ │ ├── repository/ # Data access layer
-│ │ ├── model/ # Entities / DTOs
-│ │ └── QuickBidApplication.java
-│ ├── main/resources/
-│ │ ├── static/ # CSS, JS, frontend files
-│ │ ├── templates/ # HTML (if Thymeleaf is used)
-│ │ └── application.properties
+│   ├── main/java/
+│   │   ├── controller/        # REST & Web controllers
+│   │   ├── service/           # Business logic
+│   │   ├── repository/        # Data access layer
+│   │   ├── model/             # Entities / DTOs
+│   │   └── QuickBidApplication.java
+│   ├── main/resources/
+│   │   ├── static/            # CSS, JS, frontend files
+│   │   ├── templates/         # HTML (Thymeleaf)
+│   │   └── application.properties
 ├── .gitignore
-├── pom.xml # Maven config
+├── pom.xml                    # Maven configuration
 └── README.md
-> This structure supports separation of concerns and maintainable backend logic.
 
 ---
 
@@ -99,10 +98,3 @@ Clone the repository:
 ```bash
 git clone https://github.com/mohamedshiras/QuickBid.git
 cd QuickBid
-spring.datasource.url=jdbc:mysql://localhost:3306/quickbid
-spring.datasource.username=YOUR_DB_USERNAME
-spring.datasource.password=YOUR_DB_PASSWORD
-spring.jpa.hibernate.ddl-auto=update
-CREATE DATABASE quickbid;
-mvn spring-boot:run
-http://localhost:8080
