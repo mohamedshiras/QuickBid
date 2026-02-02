@@ -418,7 +418,10 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 👥 Contributors
 
-- [Mohamed Shiras](https://github.com/mohamedshiras) - Project Lead & Developer
+- [Mohamed Shiras](https://github.com/mohamedshiras)       -  Project Lead & Developer
+- [Nimesh Kolambage](https://github.com/NimeshKolambage)   -  Developer
+- [Diran Dilshan](https://github.com/Diran-Dilshan)        -  Developer
+- [Thaweesha Perera](https://github.com/ThaweeshaPerera7)  -  Developer
 
 ---
 
